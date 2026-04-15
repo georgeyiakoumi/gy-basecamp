@@ -16,14 +16,14 @@ Before anything else, verify that the required MCPs are reachable. Report the st
 | Linear | Project tracking, issues, milestones | Yes | Phase 4 onwards |
 | GitHub | Repo access, branch status, PR state | Yes | Phase 4 onwards |
 | Notion | Master plan documentation | Yes | Phase 3 onwards |
-| Excalidraw | IA diagrams and user flows | Yes | Phase 5 (IA/flows) |
+
 | Netlify | Deployment status and environment config | If project uses Netlify | Deployment stage |
 
 **How to check (important — follow this order):**
 
-1. **First, search for available tools** using the tool search / deferred tools mechanism. Cloud MCPs (Linear, Notion, Netlify, Excalidraw, GitHub) are loaded as deferred tools and may not appear until you explicitly search for them. Search for each by name before concluding it's missing.
+1. **First, search for available tools** using the tool search / deferred tools mechanism. Cloud MCPs (Linear, Notion, Netlify, GitHub) are loaded as deferred tools and may not appear until you explicitly search for them. Search for each by name before concluding it's missing.
 
-2. **Then attempt a lightweight call** to each found MCP (e.g. list teams in Linear, search in Notion, list commits in GitHub, read_me in Excalidraw). A successful response confirms the connection is live.
+2. **Then attempt a lightweight call** to each found MCP (e.g. list teams in Linear, search in Notion, list commits in GitHub). A successful response confirms the connection is live.
 
 3. **Distinguish between three states:**
    - ✅ **Connected** — tool found and call succeeded
@@ -41,7 +41,7 @@ MCP Status
 ✅ Linear     — connected (workspace: [name])
 ✅ GitHub     — connected (repo: [name])
 ✅ Notion     — connected
-✅ Excalidraw — connected
+
 ✅ Netlify    — connected
 ⚠️ [Other]   — connected but verify it's needed
 ```
@@ -51,6 +51,83 @@ MCP Status
 - George can add it via the MCP servers panel in VS Code (Claude Code extension settings)
 - All required MCPs are cloud MCPs managed through the Claude AI integration — they are added via the VS Code extension, not config files
 - Once added, it will be available in all projects automatically
+
+---
+
+## Phase 1b — Stack verification
+
+After MCPs are confirmed, verify the codebase is correctly configured before any design or code work begins. Run these checks and fix anything that fails:
+
+**Tailwind CSS pipeline:**
+1. `postcss.config.js` (or `.mjs`) exists at the project root with `tailwindcss` and `autoprefixer` plugins
+2. `tailwind.config.ts` exists and its `content` array includes `./app/**/*.{ts,tsx}` and `./components/**/*.{ts,tsx}`
+3. `app/globals.css` contains `@tailwind base;`, `@tailwind components;`, `@tailwind utilities;`
+4. `autoprefixer` is in devDependencies (run `npm ls autoprefixer` — if missing, `npm install -D autoprefixer`)
+
+**Quick smoke test:**
+- Run `npx next build` — it should compile without errors
+- If the build passes but styles don't render in the browser, clear the `.next` cache (`rm -rf .next`) and restart the dev server
+
+**If any of these are missing, fix them before proceeding.** A broken CSS pipeline will waste hours downstream.
+
+**Typecheck:**
+- Run `npm run typecheck` — it should pass with zero errors
+- Fix any type errors before proceeding. A codebase that starts with type errors compounds them quickly.
+
+**Testing setup — Playwright (do this in Phase 1b, before any features are built):**
+
+Install Playwright:
+```bash
+npm install -D @playwright/test
+npx playwright install
+```
+
+Create `playwright.config.ts` at the project root:
+```ts
+import { defineConfig, devices } from '@playwright/test'
+
+export default defineConfig({
+  testDir: './e2e',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
+  use: {
+    baseURL: 'http://localhost:3000',
+    trace: 'on-first-retry',
+  },
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+  ],
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+  },
+})
+```
+
+Add to `package.json` scripts:
+```json
+"test:e2e": "playwright test",
+"test:e2e:ui": "playwright test --ui"
+```
+
+Create `e2e/` directory and write the first smoke test immediately — even before any features exist. A passing baseline of 1 test is more valuable than a planned suite of 20:
+```ts
+// e2e/smoke.spec.ts
+import { test, expect } from '@playwright/test'
+
+test('homepage loads', async ({ page }) => {
+  await page.goto('/')
+  await expect(page).toHaveTitle(/[A-Za-z]/)
+})
+```
+
+> **Why set up testing on day one?** A test suite established early creates a passing baseline. That baseline is the only thing that proves future changes — upgrades, refactors, migrations — haven't regressed anything. A test suite added late has to be written against already-complex code with no baseline to compare against. See Standing engineering disciplines → Test suite hygiene.
+
+> **Why run the build now?** `npm run dev` masks many production errors (missing Suspense boundaries, SSR/CSR mismatches, static prerendering failures). A build that passes locally on day one establishes a clean baseline. A build broken for weeks is much harder to diagnose than one broken since yesterday. Run `next build` on every PR via CI — or at minimum, run it manually before declaring any milestone done.
 
 ---
 
@@ -108,6 +185,16 @@ One paragraph: what this is, who it's for, what success looks like.
 | M1 | [Name] | [Date or sprint] |
 | M2 | [Name] | [Date or sprint] |
 
+## Decisions log
+Capture every significant directional decision here on the day it's made — before any code is written.
+Each entry must include the *why*, not just the *what*. The why is what you'll need when constraints change and you have to revisit.
+
+| Date | Decision | Why | Alternatives rejected |
+|---|---|---|---|
+| YYYY-MM-DD | [What was decided] | [The reasoning] | [What else was considered and why it was ruled out] |
+
+> A decisions log pays for itself many times over. The cost is ten minutes of writing per decision; the value is never re-litigating the same question three weeks later when you're tired and the answer feels arbitrary.
+
 ## Open questions
 - Questions that need answers before specific tasks can be completed
 ```
@@ -136,7 +223,15 @@ Description: [What needs to be done and why — 2–4 sentences]
 Labels:      [design / frontend / backend / research / content]
 Priority:    [Urgent / High / Medium / Low]
 Milestone:   [M1 / M2 / etc. if defined]
+Done when:   [Binary, mechanical acceptance criterion — a check a computer or human can run in seconds
+              that returns pass/fail with no judgement required. Examples:
+              - "`npm run build` exits 0 with no new warnings"
+              - "User can complete [task] in a fresh browser session without console errors"
+              - "`git grep 'deprecated-module'` returns zero matches"
+              NOT: "the feature works" or "it feels complete"]
 ```
+
+> **Why binary criteria matter.** "Feels done" is unreliable. A binary, mechanical check eliminates subjective decision points, makes the work decomposable into measurable steps, and absorbs setbacks without scope-reduction temptation — because scope reduction is visibly cheating when the criterion still fails.
 
 **Issue granularity guide:**
 - One issue = one reviewable unit of work (something that can be PR'd, tested, or signed off independently)
@@ -147,6 +242,11 @@ Milestone:   [M1 / M2 / etc. if defined]
 - Confirm the total issue count and project structure with George
 - Flag any dependencies between issues (i.e. issue B cannot start until issue A is complete)
 - Identify any open questions from Notion that are blocking specific issues
+
+**Scoping question to ask for every issue before creating it:**
+> "What does this assume already exists?"
+
+If the answer reveals a missing foundation — something multiple other issues also depend on — stop. Create the foundation work as its own issue first and reclassify the original as a follow-up. A half-day ticket that cascades into a multi-week foundation reset is a sign the precondition wasn't examined at scoping time.
 
 ---
 
@@ -160,10 +260,10 @@ Load [`ux-process.md`](./ux-process.md). Before any interface is designed, the f
 1. **Research** — what do we know about the users? What assumptions need validating? → Document findings in **Notion** (one page per research round)
 2. **Strategy** — does the feature align to a clear user goal and business outcome? → Record in the **Notion** master plan under Goals and Design principles
 3. **Personas** — which persona(s) does this task serve? Reference them in every design decision → One **Notion** page per persona, linked from the master plan
-4. **Brand identity** — establish tone of voice, colour direction, typography system, and icon style as a cohesive set → Document on a **Notion** page titled `[Project Name] — Brand Identity`, linked from the master plan. Then configure: colours in `globals.css`, fonts in `layout.tsx` + `tailwind.config.ts`, icon library swap if needed via `npm run swap-icons`
+4. **Brand identity** — establish tone of voice, colour direction, typography system, and icon style as a cohesive set → Document on a **Notion** page titled `[Project Name] — Brand Identity`, linked from the master plan. Then configure: colours in `globals.css`, fonts in `layout.tsx` + `tailwind.config.ts`, icon library swap if needed via `npm run swap-icons`. When writing or reviewing any marketing or UI copy (headings, CTAs, landing pages, onboarding), invoke the `copywriting` skill.
 5. **User stories** — write stories for all in-scope functionality before opening Figma or writing code → Draft in **Notion** first, then mirror each story as a **Linear** issue
-6. **Information architecture** — define the structure and navigation before laying out screens → Generate as an **Excalidraw** board via MCP; embed link in Notion
-7. **User flows** — map the full flow (happy path + errors + edge cases) before designing individual screens → Generate as an **Excalidraw** board via MCP (one board per flow); embed link in Notion and the relevant Linear issue
+6. **Information architecture** — define the structure and navigation before laying out screens → Document as a structured **Notion** page with the site map hierarchy, linked from the master plan
+7. **User flows** — map the full flow (happy path + errors + edge cases) before designing individual screens → Document as **Notion** pages (one page per flow) using the flow notation format; link from the master plan and the relevant Linear issue
 
 Do not proceed to Stage 2 until flows are mapped and reviewed.
 
@@ -180,13 +280,153 @@ Design psychology continues to apply through Stage 3. It is not a one-time gate.
 Load [`ui-standards.md`](./ui-standards.md). Only once structure and psychology have been validated, apply the visual layer using the brand identity decisions from Stage 1:
 
 1. **Layout** — translate flows into screen layouts using Tailwind grid/flex
-2. **Components** — reach for shadcn primitives first; compose or extend as needed
+2. **Components** — reach for shadcn primitives first; compose or extend as needed. When adding, composing, debugging, or styling shadcn components, invoke the `shadcn` skill — it has component docs, usage examples, and registry knowledge built in.
 3. **Colour** — apply the brand palette via shadcn tokens in `globals.css`; verify dark mode and WCAG AA contrast
 4. **Typography** — apply the brand's font system; confirm hierarchy reads clearly across the type scale
 5. **Iconography** — use the project's chosen icon library; confirm sizing (`size-*`), labels, and accessibility attributes
 6. **Spacing** — apply Tailwind spacing scale; confirm groupings read correctly
 
+### Testing strategy (runs throughout)
+
+Testing is not a phase that happens after features are built — it is a discipline applied continuously. Follow this approach:
+
+**What to test with Playwright (E2E):**
+- Every user-facing flow defined in the UX process — happy path first, then error states
+- Any flow that involves auth, data mutation, or navigation across multiple pages
+- Critical paths: sign up, log in, core feature task, export/save
+
+**What NOT to test with Playwright:**
+- Visual appearance (use manual dark mode / breakpoint checks instead)
+- Internal implementation details — test what the user sees, not how the code works
+- Every possible edge case — focus on the flows users will actually hit
+
+**When to write tests:**
+- Write the E2E test for a flow **in the same issue** as building the flow — not as a follow-up ticket
+- After any refactor that touches a user-facing flow, run the full suite before marking done
+- After any dependency upgrade (React, Next.js, Tailwind), run the full suite to confirm the baseline holds
+
+**Maintaining the suite:**
+- Update test selectors in the **same PR** that changes the UI — never let them drift
+- If the pass count drops dramatically between runs, check the environment before reading the code — a stale dev server on port 3000 is a common false positive (see Standing engineering disciplines → Test suite hygiene)
+- Keep `reuseExistingServer: !process.env.CI` in `playwright.config.ts` but be aware: if a background dev server is running from a previous session, Playwright will reuse it. Kill stray servers before running the suite locally if results look wrong (`lsof -i :3000`)
+
+**The baseline number matters:**
+After each milestone, note the passing test count in a Linear comment. This number is a load-bearing fact — it's what you compare against when something unexpected changes.
+
+### Database work (Supabase)
+When any work involves writing queries, designing schema, or optimising database performance, invoke the `supabase-postgres-best-practices` skill. This applies from the first time a table is created — schema decisions made early are expensive to undo later.
+
 ### Throughout all stages
 - Update the relevant Linear issue status as work progresses
 - Log decisions and trade-offs as comments on the Linear issue — not just in conversation
 - If scope changes materially, update the Notion document first, then adjust Linear issues to match
+
+---
+
+---
+
+## Phase 6 — Project close
+
+Run this phase when the final milestone is shipped and the product is in a stable deployed state.
+
+**1. Linear**
+- Mark all remaining issues as Done or Cancelled (with a note explaining why)
+- Mark the project itself as Completed
+
+**2. Notion**
+- Update the master plan's milestone table to reflect completion dates
+- Add a "Status: Shipped" note to the Overview section
+- Confirm the Decisions Log is up to date
+
+**3. Deployment**
+- Confirm the production build is green (`next build` passes)
+- Verify the live URL is accessible and environment variables are set correctly
+- Check Netlify deploy log for any warnings
+
+**4. Retrospective — Lessons & Insights**
+Create a child page under the master plan titled `📚 Lessons & Insights`. This is a permanent record of what this project taught us — written for someone who has no project context, as case study material.
+
+See the **Lessons & Insights** rules below for how to write and structure this page.
+
+---
+
+## Lessons & Insights — standing rules
+
+These rules apply throughout the project, not just at close. Lessons should be captured in the moment — while the story is fresh — not reconstructed at the end.
+
+### When to write a lesson
+Write a lesson entry whenever any of the following happen:
+- A non-obvious decision was made and the reasoning matters for future work
+- Something broke in a way that wasn't anticipated — and the fix revealed a generalisation
+- A process discipline was applied (binary acceptance criterion, regression checklist, etc.) and it worked or failed in an instructive way
+- A milestone closes faster or slower than expected due to something that could have been predicted
+- A refactor, migration, or architecture change produced a surprise — good or bad
+
+Do not wait for the project to end. Write the lesson the same session it happened.
+
+### Format for each entry
+```
+Date: YYYY-MM-DD
+Headline: One sentence — what happened and why it matters
+
+The story: What actually happened — specific, concrete, names the files/tickets/decisions involved.
+
+The generalisation: The rule that applies beyond this project. Written for an external reader with no project context.
+
+Linear reference: [ticket ID(s) if applicable]
+```
+
+### Page structure — one lesson per Notion page
+**Do not write all lessons on a single page.** Each lesson is its own child page under `📚 Lessons & Insights`. The parent page contains only:
+- A one-paragraph intro explaining the format
+- A numbered index linking to each child page (title = lesson headline)
+
+This keeps every individual lesson readable by the Notion MCP in a single fetch, and prevents the parent page from growing too large to read.
+
+**To add a new lesson:**
+1. Create a new child page under `📚 Lessons & Insights` titled `[N]. [Date] — [Headline]`
+2. Write the full entry using the format above
+3. Add a link to it in the index on the parent page
+
+### Tone
+Write for an external audience — someone reading this for a case study should not need project context to understand the point. The story is project-specific; the generalisation is universal.
+
+---
+
+## Standing engineering disciplines
+
+These rules apply on every project, at every stage. They are derived from hard-won experience and exist to prevent specific, recurring failure modes.
+
+### Declaring a milestone done
+
+Before marking any milestone complete, open the user-facing surface in a fresh browser tab and click through it manually. Ask:
+- Can I find any seam between old behaviour and new behaviour?
+- Does the codebase still contain two vocabularies, two UI surfaces, or two data models where the milestone promised one?
+- Does the binary acceptance criterion on every issue in this milestone pass?
+
+If any answer is yes, the milestone is not done. "The engine works" is a developer story. "Every user-facing surface uses the engine" is the milestone.
+
+### Before any refactor touching user-facing flows
+
+Write a **regression checklist** *before* starting — not after. Walk through the working flows manually, enumerate every user-facing capability the refactor must preserve, and put the checklist in the PR description. Run it before declaring done.
+
+Format:
+```
+## Regression checklist
+- [ ] [User can do X — specific UI steps, not abstract feature name]
+- [ ] [User can do Y — include any edge cases specific to this flow]
+```
+
+Automated tests are necessary but not sufficient. The checklist catches what tests don't cover. Skipping it leads to silent feature loss that only surfaces when a user manually tests.
+
+### Removing a feature
+
+Removing a feature is two jobs:
+1. Remove the user-facing surface (UI, routes, buttons)
+2. Remove the full implementation (data shapes, props, functions, types, state)
+
+Doing only (1) is **worse than doing neither** — dead implementation creates a phantom mental model that misleads anyone who reads the code later. Either delete every trace in the same commit, or open a cleanup issue immediately and make the residue visible. "I'll come back to it" doesn't happen.
+
+### Test suite hygiene
+
+Update test selectors and assertions in the **same PR** that changes the UI — not as a follow-up. A test suite allowed to drift loses its value as a regression signal. When test results drop dramatically (e.g. 40 passing → 11 passing), check the test environment before reading the code — a stale dev server, build cache, or polluted port is often the culprit.

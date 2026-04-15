@@ -5,7 +5,7 @@ A personal project starter for George Yiakoumi — combining a production-ready 
 Every new project created from this template gets:
 - A running Next.js + shadcn/ui + Tailwind + Supabase + Netlify codebase
 - A Claude Code assistant that runs a structured project setup routine on first open
-- Automatic MCP connectivity checks (Linear, Notion, Netlify, GitHub, Excalidraw)
+- Automatic MCP connectivity checks (Linear, Notion, Netlify, GitHub)
 - A master plan synced to Notion and a Linear project with issues created before any code is written
 
 ---
@@ -23,7 +23,7 @@ Install these once. They're needed every time you create a new project.
 | Claude Code | Install the Claude Code extension in VS Code |
 | Supabase CLI (optional) | `brew install supabase/tap/supabase` — only needed for local DB dev |
 
-MCP connections (Linear, Notion, Netlify, GitHub, Excalidraw) are configured at the VS Code level, not per-project. Set them up once in Claude Code's MCP settings.
+MCP connections (Linear, Notion, Netlify, GitHub) are configured at the VS Code level, not per-project. Set them up once in Claude Code's MCP settings.
 
 ---
 
@@ -67,7 +67,7 @@ The script will:
 
 Claude Code reads `CLAUDE.md` from the project root automatically. On first open it will:
 
-1. **Check MCP connections** — Linear, Notion, Netlify, GitHub, Excalidraw. It will stop and flag anything that isn't reachable before proceeding.
+1. **Check MCP connections** — Linear, Notion, Netlify, GitHub. It will stop and flag anything that isn't reachable before proceeding.
 2. **Scope the project** — ask a small set of questions to establish what's being built, who it's for, and what success looks like.
 3. **Create a Notion master plan** — a structured document covering goals, users, scope, constraints, milestones, and open questions.
 4. **Create a Linear project + issues** — one issue per discrete task, linked back to the Notion plan.

@@ -13,8 +13,8 @@ These are the activities that happen before pixels — and the ones that make pi
 | UX strategy, experience principles, opportunity maps | **Notion** | Stored in the master plan document under Goals / Design principles |
 | User personas | **Notion** | One page per persona, linked from the master plan |
 | User stories | **Notion → Linear** | Written in Notion first; each story then mirrored as a Linear issue |
-| Information architecture (site maps) | **Excalidraw** | Generated via MCP; link embedded in the relevant Notion page |
-| User flows | **Excalidraw** | Generated via MCP; one board per flow, link embedded in Notion |
+| Information architecture (site maps) | **Notion** | One page per site map, using structured hierarchy format; linked from the master plan |
+| User flows | **Notion** | One page per flow, using flow notation format; linked from the master plan and the relevant Linear issue |
 | Brand identity (tone, colour, type, icons) | **Notion** | One page in the master plan; decisions flow into `globals.css`, `tailwind.config.ts`, and `ui-standards.md` |
 | Usability test plans + findings | **Notion** | One page per test round, findings logged with severity ratings |
 
@@ -386,7 +386,7 @@ Level 3: Detail pages (Features → Analytics / Reporting / Alerts)
 - Are navigation labels based on user language or internal company language?
 - If the product doubled in size, would this structure still hold?
 
-**Where it lives:** Excalidraw — generated via MCP using the site map format above. Use one board per product area if the IA is large. Once generated, embed the Excalidraw link in the relevant Notion page (typically under the master plan's Scope section). When updating the IA, update the Excalidraw board and note the change as a comment on the relevant Linear issue.
+**Where it lives:** Notion — one page per site map using the structured hierarchy format above. Link from the master plan's Scope section. Use indented lists or tables to represent the hierarchy. When updating the IA, update the Notion page and note the change as a comment on the relevant Linear issue.
 
 ---
 
@@ -415,13 +415,14 @@ Level 3: Detail pages (Features → Analytics / Reporting / Alerts)
 - [ ] All decision points accounted for
 - [ ] Error states designed (not just happy path)
 - [ ] Success state defined (what does the user see when done?)
+- [ ] Every UI affordance matches the user's **cognitive mode** at that point — not just the topology of the feature. "Looking at how a thing is structured" and "declaring how a thing should be structured" are different mental states even if they use the same panel. If the same affordance is being reused for two conceptually different activities, question it.
 
 **Questions to ask:**
 - How many steps does this task take? Could any be removed or combined?
 - What happens if the user makes a mistake at each step?
 - Is there a way for the user to get irreversibly stuck?
 
-**Where it lives:** Excalidraw — generated via MCP, one board per distinct user flow. Name boards clearly: `[Project] — [Flow name] flow` (e.g. `Acme — Onboarding flow`). Embed the link in the corresponding Notion user story page and in the relevant Linear issue description. If a flow changes materially after being drawn, redraw it — do not annotate over a stale version.
+**Where it lives:** Notion — one page per distinct user flow, titled `[Project] — [Flow name] flow` (e.g. `Acme — Onboarding flow`). Use the flow notation format with indented steps, decision branches, and clearly marked error/edge cases. Link from the corresponding user story page and the relevant Linear issue description. If a flow changes materially, update the Notion page — do not annotate over a stale version.
 
 ---
 
@@ -470,3 +471,22 @@ Recommendation: [Specific design change to address it]
 - What surprised us?
 
 **Where it lives:** Notion — one page per test round, structured as: test plan → participants → tasks → findings (using the analysis format above with severity ratings) → recommendations. Link findings to the relevant Linear issues so fixes are tracked. If a finding results in a scope change, update the master plan first.
+
+---
+
+## Design patterns: emerge first, enforce second
+
+**The principle:** Design systems work better as *observed patterns* crystallised partway through the work than as *upfront rules* imposed before the work starts.
+
+The first 2–3 components or screens teach you what the pattern wants to be. The next 7 benefit from that knowledge. Early inconsistency is not failure — it is data about what the right pattern is.
+
+**The discipline:**
+1. Build the first 2–3 instances without enforcing uniformity
+2. After they exist, identify what the pattern naturally became — structure, naming, nesting, control placement
+3. Run an explicit normalisation pass to enforce that pattern retroactively across everything built so far
+4. Document it and hold it from that point forward
+
+Plan for the normalisation pass — it will happen regardless. Budget it explicitly. Once enforced, per-case decisions evaporate and work accelerates.
+
+**When testing reveals a foundational model is wrong:**
+If usability testing shows that a core data model or interaction model doesn't fit how users think, rework it immediately — even if it means revisiting a milestone already marked done. Every feature built on top of a broken model has to be rebuilt when the rework eventually happens. The sooner it happens, the cheaper it is. Deferring foundational rework to "polish later" is not a deferral — it is compounding interest.

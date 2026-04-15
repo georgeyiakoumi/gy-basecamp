@@ -5,6 +5,26 @@ Every principle here should be applied actively, not just cited.
 
 ---
 
+## When to run a psychology review
+
+Run a full review at these two points — not just when something feels wrong:
+
+1. **End of Stage 1 (before wireframing)** — review every user flow against all six principles below. Flag violations at the flow level before any screen is designed. It is far cheaper to fix a cognitive load problem in a flow diagram than in a coded component.
+
+2. **End of Stage 3 (before shipping a milestone)** — review the built UI against the checklist below. Psychology is not a one-time gate; it applies through implementation.
+
+**Quick review checklist — run this on every screen:**
+- [ ] **Hick's Law** — is there one clear primary action? Are choices minimised or progressive?
+- [ ] **Gestalt** — do visual groupings match logical groupings? Would a user know what belongs together if labels were removed?
+- [ ] **Fitts's Law** — is the primary CTA the easiest thing to click/tap? Are destructive actions appropriately distant and small?
+- [ ] **Jakob's Law** — does every convention-dependent pattern (nav placement, icon meanings, form behaviour) follow established norms?
+- [ ] **Cognitive Load** — what can be removed, pre-filled, or deferred? Does the screen still communicate clearly in greyscale?
+- [ ] **Colour Psychology** — is colour communicating meaning, not just decorating? Does hierarchy hold in greyscale?
+
+---
+
+---
+
 ## Hick's Law
 
 **The principle:** Decision time increases logarithmically with the number of choices. More options = slower, more effortful decisions.
