@@ -226,6 +226,25 @@ else
   USE_CHARTS=false
 fi
 
+# ── Sidebar ───────────────────────────────────────────────────
+echo ""
+read -p "$(echo -e ${BOLD})Will this project use a sidebar layout? (y/n): $(echo -e ${RESET})" USE_SIDEBAR
+if [[ "$USE_SIDEBAR" == "y" || "$USE_SIDEBAR" == "Y" ]]; then
+  USE_SIDEBAR=true
+else
+  USE_SIDEBAR=false
+fi
+
+# ── Dark mode ─────────────────────────────────────────────────
+echo ""
+echo -e "${BOLD}Theme toggling (dark mode) is included by default.${RESET}"
+read -p "$(echo -e ${BOLD})Include dark mode? [Y/n]: $(echo -e ${RESET})" USE_DARK_MODE_INPUT
+if [[ "$USE_DARK_MODE_INPUT" == "n" || "$USE_DARK_MODE_INPUT" == "N" ]]; then
+  USE_DARK_MODE=false
+else
+  USE_DARK_MODE=true
+fi
+
 # ── Visibility ────────────────────────────────────────────────
 echo ""
 echo -e "${BOLD}Repo visibility:${RESET}"
@@ -243,6 +262,14 @@ echo -e "  Type:       ${CYAN}$PROJECT_TYPE_LABEL${RESET}"
 echo -e "  Stack:      $STACK_SUMMARY"
 if [ "$USE_CHARTS" = true ]; then
   echo -e "  Charts:     Recharts + shadcn Chart"
+fi
+if [ "$USE_SIDEBAR" = true ]; then
+  echo -e "  Sidebar:    shadcn Sidebar + CSS variables"
+fi
+if [ "$USE_DARK_MODE" = true ]; then
+  echo -e "  Dark mode:  next-themes ThemeProvider"
+else
+  echo -e "  Dark mode:  ${YELLOW}skipped${RESET}"
 fi
 echo -e "  Visibility: $VISIBILITY"
 echo -e "  Location:   ${BLUE}$ACTIVE_DIR/$PROJECT_NAME${RESET}"
@@ -400,6 +427,111 @@ if [ "$USE_CHARTS" = true ]; then
   echo -e "  ${YELLOW}↳ Added Recharts + chart colour tokens${RESET}"
 fi
 
+# Add sidebar CSS variables if sidebar enabled
+if [ "$USE_SIDEBAR" = true ]; then
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' '/--ring: 222.2 84% 4.9%;/a\
+\
+    /* ── Sidebar ───────────────────────────────────────────────\
+       Used by shadcn Sidebar component.\
+    ───────────────────────────────────────────────────────── */\
+    --sidebar: 0 0% 98%;\
+    --sidebar-foreground: 240 5.3% 26.1%;\
+    --sidebar-primary: 240 5.9% 10%;\
+    --sidebar-primary-foreground: 0 0% 98%;\
+    --sidebar-accent: 240 4.8% 95.9%;\
+    --sidebar-accent-foreground: 240 5.9% 10%;\
+    --sidebar-border: 220 13% 91%;\
+    --sidebar-ring: 217.2 91.2% 59.8%;
+' app/globals.css
+    sed -i '' '/--ring: 212.7 26.8% 83.9%;/a\
+\
+    --sidebar: 240 5.9% 10%;\
+    --sidebar-foreground: 240 4.8% 95.9%;\
+    --sidebar-primary: 224.3 76.3% 48%;\
+    --sidebar-primary-foreground: 0 0% 100%;\
+    --sidebar-accent: 240 3.7% 15.9%;\
+    --sidebar-accent-foreground: 240 4.8% 95.9%;\
+    --sidebar-border: 240 3.7% 15.9%;\
+    --sidebar-ring: 217.2 91.2% 59.8%;
+' app/globals.css
+  else
+    sed -i '/--ring: 222.2 84% 4.9%;/a\
+\
+    /* ── Sidebar ───────────────────────────────────────────────\
+       Used by shadcn Sidebar component.\
+    ───────────────────────────────────────────────────────── */\
+    --sidebar: 0 0% 98%;\
+    --sidebar-foreground: 240 5.3% 26.1%;\
+    --sidebar-primary: 240 5.9% 10%;\
+    --sidebar-primary-foreground: 0 0% 98%;\
+    --sidebar-accent: 240 4.8% 95.9%;\
+    --sidebar-accent-foreground: 240 5.9% 10%;\
+    --sidebar-border: 220 13% 91%;\
+    --sidebar-ring: 217.2 91.2% 59.8%;
+' app/globals.css
+    sed -i '/--ring: 212.7 26.8% 83.9%;/a\
+\
+    --sidebar: 240 5.9% 10%;\
+    --sidebar-foreground: 240 4.8% 95.9%;\
+    --sidebar-primary: 224.3 76.3% 48%;\
+    --sidebar-primary-foreground: 0 0% 100%;\
+    --sidebar-accent: 240 3.7% 15.9%;\
+    --sidebar-accent-foreground: 240 4.8% 95.9%;\
+    --sidebar-border: 240 3.7% 15.9%;\
+    --sidebar-ring: 217.2 91.2% 59.8%;
+' app/globals.css
+  fi
+  echo -e "  ${YELLOW}↳ Added sidebar CSS variables (light + dark)${RESET}"
+fi
+
+# Set up dark mode with next-themes
+if [ "$USE_DARK_MODE" = true ]; then
+  # Add next-themes to package.json dependencies
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' 's/"lucide-react": "[^"]*"/"lucide-react": "^0.460.0",\n    "next-themes": "^0.4.4"/' package.json
+  else
+    sed -i 's/"lucide-react": "[^"]*"/"lucide-react": "^0.460.0",\n    "next-themes": "^0.4.4"/' package.json
+  fi
+
+  # Wrap layout.tsx with ThemeProvider
+  cat > app/layout.tsx << 'LAYOUTEOF'
+import type { Metadata } from 'next'
+import { ThemeProvider } from 'next-themes'
+import './globals.css'
+
+export const metadata: Metadata = {
+  title: 'Project',
+  description: 'Built with Next.js, shadcn/ui, and Tailwind CSS.',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-screen bg-background font-sans antialiased">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  )
+}
+LAYOUTEOF
+
+  echo -e "  ${YELLOW}↳ Added next-themes ThemeProvider to layout.tsx${RESET}"
+else
+  echo -e "  ${YELLOW}↳ Dark mode skipped — .dark CSS vars retained for future use${RESET}"
+fi
+
 echo -e "${GREEN}✓ Scaffold configured${RESET}"
 
 # ── Inject project identity into CLAUDE.md ────────────────────
@@ -408,10 +540,17 @@ echo -e "${BLUE}Updating CLAUDE.md...${RESET}"
 
 ORIGINAL_CLAUDE=$(cat CLAUDE.md)
 
+DARK_MODE_FLAG="true"
+if [ "$USE_DARK_MODE" = false ]; then DARK_MODE_FLAG="false"; fi
+SIDEBAR_FLAG="false"
+if [ "$USE_SIDEBAR" = true ]; then SIDEBAR_FLAG="true"; fi
+
 cat > CLAUDE.md << EOF
 # Project: $PROJECT_NAME
 **Type:** $PROJECT_TYPE_LABEL
 **Created:** $(date +%Y-%m-%d)
+**Dark mode:** $DARK_MODE_FLAG
+**Sidebar:** $SIDEBAR_FLAG
 
 ## Stack
 
@@ -713,11 +852,17 @@ echo -e "${GREEN}${BOLD}╔═════════════════�
 echo -e "${GREEN}${BOLD}║     Project ready!               ║${RESET}"
 echo -e "${GREEN}${BOLD}╚══════════════════════════════════╝${RESET}"
 echo ""
-echo -e "  ${BOLD}Name:${RESET}    $PROJECT_NAME"
-echo -e "  ${BOLD}Type:${RESET}    $PROJECT_TYPE_LABEL"
-echo -e "  ${BOLD}Stack:${RESET}   $STACK_SUMMARY"
-echo -e "  ${BOLD}GitHub:${RESET}  https://github.com/georgeyiakoumi/$PROJECT_NAME"
-echo -e "  ${BOLD}Local:${RESET}   $ACTIVE_DIR/$PROJECT_NAME"
+echo -e "  ${BOLD}Name:${RESET}      $PROJECT_NAME"
+echo -e "  ${BOLD}Type:${RESET}      $PROJECT_TYPE_LABEL"
+echo -e "  ${BOLD}Stack:${RESET}     $STACK_SUMMARY"
+if [ "$USE_DARK_MODE" = true ]; then
+  echo -e "  ${BOLD}Dark mode:${RESET} enabled (next-themes)"
+fi
+if [ "$USE_SIDEBAR" = true ]; then
+  echo -e "  ${BOLD}Sidebar:${RESET}   CSS variables injected"
+fi
+echo -e "  ${BOLD}GitHub:${RESET}    https://github.com/georgeyiakoumi/$PROJECT_NAME"
+echo -e "  ${BOLD}Local:${RESET}     $ACTIVE_DIR/$PROJECT_NAME"
 echo ""
 if [ "$USE_SUPABASE" = true ]; then
   echo -e "  ${YELLOW}→ Fill in .env.local with your Supabase keys${RESET}"

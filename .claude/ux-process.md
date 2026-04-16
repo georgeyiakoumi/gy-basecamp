@@ -313,6 +313,17 @@ Radius:     [Sharp / Default / Rounded + rationale]
 - If you showed someone just the colour palette, font pairing, and icon style — with no copy — would they guess the product's personality correctly?
 - Does the tone of voice feel natural coming from a product that looks like this?
 
+### Applying brand to the codebase
+
+Once the brand decisions are finalised, apply them using the shadcn theme creator:
+
+1. Go to **[ui.shadcn.com/create](https://ui.shadcn.com/create)** and configure the palette, radius, fonts, and icon library to match the brand decisions above.
+2. Copy the generated CSS and replace the `:root` and `.dark` blocks in `app/globals.css`.
+3. Update `components.json` with the chosen `baseColor` and `iconLibrary`.
+4. Update `app/layout.tsx` with the font variable on `<html>` if a Google Font was chosen.
+
+The theme creator output is a direct translation of brand decisions into code. Do this once, at the end of the Brand Identity phase, before any UI components are built.
+
 ---
 
 ## User Stories

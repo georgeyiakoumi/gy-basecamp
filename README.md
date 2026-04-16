@@ -70,8 +70,9 @@ Claude Code reads `CLAUDE.md` from the project root automatically. On first open
 1. **Check MCP connections** — Linear, Notion, Netlify, GitHub. It will stop and flag anything that isn't reachable before proceeding.
 2. **Scope the project** — ask a small set of questions to establish what's being built, who it's for, and what success looks like.
 3. **Create a Notion master plan** — a structured document covering goals, users, scope, constraints, milestones, and open questions.
-4. **Create a Linear project + issues** — one issue per discrete task, linked back to the Notion plan.
-5. **Begin work in the right order** — UX process first, design psychology throughout, UI last.
+4. **Create a Linear project + issues** — one issue per discrete task, with binary acceptance criteria, linked back to the Notion plan.
+5. **Follow the UX process** — research and strategy first, brand identity (including shadcn theme setup) before any UI, components last.
+6. **Write a Playwright E2E test suite** — set up during Phase 1b, expanded as features ship.
 
 You don't need to do anything to trigger this. Just open the Claude Code panel and it starts.
 
@@ -153,11 +154,15 @@ The Netlify MCP can also check deployment status and environment config directly
 
 All visual customisation flows through two files — nothing else needs to be touched:
 
-**`app/globals.css`** — update the HSL values for `--primary`, `--accent`, `--radius`, and any other shadcn tokens. Use [ui.shadcn.com/themes](https://ui.shadcn.com/themes) to generate a full palette visually.
+Use **[ui.shadcn.com/create](https://ui.shadcn.com/create)** to build your theme visually, then apply the output:
 
-**`tailwind.config.ts`** — update `fontFamily.sans` to your chosen typeface. Add the font import to `layout.tsx` using `next/font`.
+**`app/globals.css`** — replace the `:root` and `.dark` blocks with the generated CSS variables. Both light and dark variants are pre-wired.
 
-Both light (`:root`) and dark (`.dark`) variants are pre-wired. Update both when changing colours.
+**`components.json`** — update `baseColor` and `iconLibrary` to match your theme choices.
+
+**`app/layout.tsx`** — add the font variable to `<html>` if you chose a Google Font.
+
+Do this once, at the end of the Brand Identity phase, before building any components. If dark mode was skipped during project creation, the `.dark` block is still present in `globals.css` — just unused until you add `next-themes`.
 
 ---
 
