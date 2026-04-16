@@ -144,7 +144,7 @@ The Netlify MCP can also check deployment status and environment config directly
 ├── netlify.toml                ← Netlify build + headers config
 ├── next.config.ts
 ├── package.json
-├── tailwind.config.ts
+├── postcss.config.js           ← Tailwind v4 via @tailwindcss/postcss
 └── tsconfig.json
 ```
 

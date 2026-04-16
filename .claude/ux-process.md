@@ -15,7 +15,7 @@ These are the activities that happen before pixels — and the ones that make pi
 | User stories | **Notion → Linear** | Written in Notion first; each story then mirrored as a Linear issue |
 | Information architecture (site maps) | **Notion** | One page per site map, using structured hierarchy format; linked from the master plan |
 | User flows | **Notion** | One page per flow, using flow notation format; linked from the master plan and the relevant Linear issue |
-| Brand identity (tone, colour, type, icons) | **Notion** | One page in the master plan; decisions flow into `globals.css`, `tailwind.config.ts`, and `ui-standards.md` |
+| Brand identity (tone, colour, type, icons) | **Notion** | One page in the master plan; decisions flow into `globals.css` (`@theme inline` block) and `ui-standards.md` |
 | Usability test plans + findings | **Notion** | One page per test round, findings logged with severity ratings |
 
 ---
@@ -226,9 +226,8 @@ Long-form (if needed): [Font name — for articles, blog posts]
 ```
 
 **Where it lands in code:**
-1. `app/layout.tsx` — import fonts via `next/font/google`, assign CSS variables
-2. `tailwind.config.ts` — map CSS variables to `fontFamily.sans`, `fontFamily.serif`, `fontFamily.mono`
-3. `app/globals.css` — apply the font variable to `body` (already wired by shadcn)
+1. `app/layout.tsx` — import fonts via `next/font/google`, assign CSS variables to `<html>`
+2. `app/globals.css` — map CSS variables in the `@theme inline` block under `--font-sans`, `--font-mono` etc.
 
 **Implementation pattern:**
 ```tsx
@@ -254,12 +253,11 @@ export default function RootLayout({ children }) {
 }
 ```
 
-```ts
-// tailwind.config.ts
-fontFamily: {
-  sans: ['var(--font-sans)', ...fontFamily.sans],
-  heading: ['var(--font-heading)', ...fontFamily.sans],
-}
+```css
+/* app/globals.css — @theme inline block */
+--font-sans: var(--font-sans);
+--font-heading: var(--font-heading);
+--font-mono: var(--font-mono);
 ```
 
 ### Icon style

@@ -415,112 +415,81 @@ if [ "$USE_CHARTS" = true ]; then
     sed -i 's/"lucide-react": "[^"]*"/"lucide-react": "^0.460.0",\n    "recharts": "^2.15.0"/' package.json
   fi
 
-  # Add chart colour tokens to globals.css (light mode)
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' '/--radius: 0.5rem;/a\
-\
-    /* ── Chart colours ─────────────────────────────────────────\
-       Used by shadcn Chart component. Edit to match your brand.\
-    ───────────────────────────────────────────────────────── */\
-    --chart-1: 220 70% 50%;\
-    --chart-2: 160 60% 45%;\
-    --chart-3: 30 80% 55%;\
-    --chart-4: 280 65% 60%;\
-    --chart-5: 340 75% 55%;
-' app/globals.css
-  else
-    sed -i '/--radius: 0.5rem;/a\
-\
-    /* ── Chart colours ─────────────────────────────────────────\
-       Used by shadcn Chart component. Edit to match your brand.\
-    ───────────────────────────────────────────────────────── */\
-    --chart-1: 220 70% 50%;\
-    --chart-2: 160 60% 45%;\
-    --chart-3: 30 80% 55%;\
-    --chart-4: 280 65% 60%;\
-    --chart-5: 340 75% 55%;
-' app/globals.css
-  fi
+  # Inject chart tokens into globals.css using Python (v4 oklch format)
+  python3 - << 'PYEOF'
+import re
 
-  # Add dark mode chart tokens
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' '/--ring: 212.7 26.8% 83.9%;/a\
-\
-    --chart-1: 220 70% 50%;\
-    --chart-2: 160 60% 45%;\
-    --chart-3: 30 80% 55%;\
-    --chart-4: 280 65% 60%;\
-    --chart-5: 340 75% 55%;
-' app/globals.css
-  else
-    sed -i '/--ring: 212.7 26.8% 83.9%;/a\
-\
-    --chart-1: 220 70% 50%;\
-    --chart-2: 160 60% 45%;\
-    --chart-3: 30 80% 55%;\
-    --chart-4: 280 65% 60%;\
-    --chart-5: 340 75% 55%;
-' app/globals.css
-  fi
+with open('app/globals.css', 'r') as f:
+    css = f.read()
+
+CHART_LIGHT = """
+  /* ── Chart colours ─────────────────────────────────────────
+     Used by shadcn Chart component. Edit to match your brand.
+  ───────────────────────────────────────────────────────── */
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);"""
+
+CHART_DARK = """
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);"""
+
+# Insert after --radius line in :root
+css = re.sub(r'(  --radius: [^;]+;)', r'\1' + CHART_LIGHT, css, count=1)
+# Insert before closing brace of .dark block
+css = re.sub(r'(\.dark \{[^}]*?)(})', lambda m: m.group(1) + CHART_DARK + '\n}', css, count=1, flags=re.DOTALL)
+
+with open('app/globals.css', 'w') as f:
+    f.write(css)
+PYEOF
 
   echo -e "  ${YELLOW}↳ Added Recharts + chart colour tokens${RESET}"
 fi
 
 # Add sidebar CSS variables if sidebar enabled
 if [ "$USE_SIDEBAR" = true ]; then
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' '/--ring: 222.2 84% 4.9%;/a\
-\
-    /* ── Sidebar ───────────────────────────────────────────────\
-       Used by shadcn Sidebar component.\
-    ───────────────────────────────────────────────────────── */\
-    --sidebar: 0 0% 98%;\
-    --sidebar-foreground: 240 5.3% 26.1%;\
-    --sidebar-primary: 240 5.9% 10%;\
-    --sidebar-primary-foreground: 0 0% 98%;\
-    --sidebar-accent: 240 4.8% 95.9%;\
-    --sidebar-accent-foreground: 240 5.9% 10%;\
-    --sidebar-border: 220 13% 91%;\
-    --sidebar-ring: 217.2 91.2% 59.8%;
-' app/globals.css
-    sed -i '' '/--ring: 212.7 26.8% 83.9%;/a\
-\
-    --sidebar: 240 5.9% 10%;\
-    --sidebar-foreground: 240 4.8% 95.9%;\
-    --sidebar-primary: 224.3 76.3% 48%;\
-    --sidebar-primary-foreground: 0 0% 100%;\
-    --sidebar-accent: 240 3.7% 15.9%;\
-    --sidebar-accent-foreground: 240 4.8% 95.9%;\
-    --sidebar-border: 240 3.7% 15.9%;\
-    --sidebar-ring: 217.2 91.2% 59.8%;
-' app/globals.css
-  else
-    sed -i '/--ring: 222.2 84% 4.9%;/a\
-\
-    /* ── Sidebar ───────────────────────────────────────────────\
-       Used by shadcn Sidebar component.\
-    ───────────────────────────────────────────────────────── */\
-    --sidebar: 0 0% 98%;\
-    --sidebar-foreground: 240 5.3% 26.1%;\
-    --sidebar-primary: 240 5.9% 10%;\
-    --sidebar-primary-foreground: 0 0% 98%;\
-    --sidebar-accent: 240 4.8% 95.9%;\
-    --sidebar-accent-foreground: 240 5.9% 10%;\
-    --sidebar-border: 220 13% 91%;\
-    --sidebar-ring: 217.2 91.2% 59.8%;
-' app/globals.css
-    sed -i '/--ring: 212.7 26.8% 83.9%;/a\
-\
-    --sidebar: 240 5.9% 10%;\
-    --sidebar-foreground: 240 4.8% 95.9%;\
-    --sidebar-primary: 224.3 76.3% 48%;\
-    --sidebar-primary-foreground: 0 0% 100%;\
-    --sidebar-accent: 240 3.7% 15.9%;\
-    --sidebar-accent-foreground: 240 4.8% 95.9%;\
-    --sidebar-border: 240 3.7% 15.9%;\
-    --sidebar-ring: 217.2 91.2% 59.8%;
-' app/globals.css
-  fi
+  python3 - << 'PYEOF'
+import re
+
+with open('app/globals.css', 'r') as f:
+    css = f.read()
+
+SIDEBAR_LIGHT = """
+  /* ── Sidebar ───────────────────────────────────────────────
+     Used by shadcn Sidebar component.
+  ───────────────────────────────────────────────────────── */
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);"""
+
+SIDEBAR_DARK = """
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);"""
+
+# Insert after --radius line in :root
+css = re.sub(r'(  --radius: [^;]+;)', r'\1' + SIDEBAR_LIGHT, css, count=1)
+# Insert before closing brace of .dark block
+css = re.sub(r'(\.dark \{[^}]*?)(})', lambda m: m.group(1) + SIDEBAR_DARK + '\n}', css, count=1, flags=re.DOTALL)
+
+with open('app/globals.css', 'w') as f:
+    f.write(css)
+PYEOF
   echo -e "  ${YELLOW}↳ Added sidebar CSS variables (light + dark)${RESET}"
 fi
 

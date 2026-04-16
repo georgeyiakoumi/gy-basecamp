@@ -58,11 +58,11 @@ MCP Status
 
 After MCPs are confirmed, verify the codebase is correctly configured before any design or code work begins. Run these checks and fix anything that fails:
 
-**Tailwind CSS pipeline:**
-1. `postcss.config.js` (or `.mjs`) exists at the project root with `tailwindcss` and `autoprefixer` plugins
-2. `tailwind.config.ts` exists and its `content` array includes `./app/**/*.{ts,tsx}` and `./components/**/*.{ts,tsx}`
-3. `app/globals.css` contains `@tailwind base;`, `@tailwind components;`, `@tailwind utilities;`
-4. `autoprefixer` is in devDependencies (run `npm ls autoprefixer` — if missing, `npm install -D autoprefixer`)
+**Tailwind CSS pipeline (v4):**
+1. `postcss.config.js` exists at the project root with `@tailwindcss/postcss` as the only plugin — there is no `tailwind.config.ts` in v4
+2. `app/globals.css` starts with `@import "tailwindcss";` and `@import "tw-animate-css";` — not the old `@tailwind base/components/utilities` directives
+3. `@tailwindcss/postcss` is in devDependencies (run `npm ls @tailwindcss/postcss` — if missing, `npm install -D @tailwindcss/postcss`)
+4. There is no `tailwind.config.ts` — all theme configuration lives inside `globals.css` in the `@theme inline` block
 
 **Quick smoke test:**
 - Run `npx next build` — it should compile without errors
@@ -305,7 +305,7 @@ Load [`ux-process.md`](./ux-process.md). Before any interface is designed, the f
 1. **Research** — what do we know about the users? What assumptions need validating? → Document findings in **Notion** (one page per research round)
 2. **Strategy** — does the feature align to a clear user goal and business outcome? → Record in the **Notion** master plan under Goals and Design principles
 3. **Personas** — which persona(s) does this task serve? Reference them in every design decision → One **Notion** page per persona, linked from the master plan
-4. **Brand identity** — establish tone of voice, colour direction, typography system, and icon style as a cohesive set → Document on a **Notion** page titled `[Project Name] — Brand Identity`, linked from the master plan. Then configure: colours in `globals.css`, fonts in `layout.tsx` + `tailwind.config.ts`, icon library swap if needed via `npm run swap-icons`. When writing or reviewing any marketing or UI copy (headings, CTAs, landing pages, onboarding), invoke the `copywriting` skill.
+4. **Brand identity** — establish tone of voice, colour direction, typography system, and icon style as a cohesive set → Document on a **Notion** page titled `[Project Name] — Brand Identity`, linked from the master plan. Then configure: colours and font variables in `globals.css` (`@theme inline` block), font imports in `layout.tsx`, icon library swap if needed via `npm run swap-icons`. When writing or reviewing any marketing or UI copy (headings, CTAs, landing pages, onboarding), invoke the `copywriting` skill.
 5. **User stories** — write stories for all in-scope functionality before opening Figma or writing code → Draft in **Notion** first, then mirror each story as a **Linear** issue
 6. **Information architecture** — define the structure and navigation before laying out screens → Document as a structured **Notion** page with the site map hierarchy, linked from the master plan
 7. **User flows** — map the full flow (happy path + errors + edge cases) before designing individual screens → Document as **Notion** pages (one page per flow) using the flow notation format; link from the master plan and the relevant Linear issue

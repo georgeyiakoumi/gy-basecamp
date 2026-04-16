@@ -950,7 +950,7 @@ import { Spinner } from "@/components/ui/spinner"
 **How to apply brand through the stack:**
 - **Colour:** Edit `--primary`, `--secondary`, `--accent` in `globals.css` using the palette from the brand identity page. Both `:root` and `.dark` must be updated. Use [ui.shadcn.com/themes](https://ui.shadcn.com/themes) to generate a full token set, then fine-tune.
 - **Radius:** Edit `--radius` in `globals.css`. shadcn scales all component radii off this single value (`rounded-md` = `calc(var(--radius) - 2px)`, `rounded-lg` = `var(--radius)`). Sharp = `0.25rem`, default = `0.5rem`, rounded = `0.75rem`.
-- **Typography:** Import fonts via `next/font/google` in `layout.tsx`, assign CSS variables, and map them in `tailwind.config.ts` under `fontFamily`. See `ux-process.md` → Typography system for the implementation pattern.
+- **Typography:** Import fonts via `next/font/google` in `layout.tsx`, assign CSS variables to `<html>`, and map them in `globals.css` under the `@theme inline` block. See `ux-process.md` → Typography system for the implementation pattern.
 - **Icons:** If the brand identity calls for a library other than Lucide, swap the package (`npm install` / `npm uninstall`), run `npm run swap-icons` to update shadcn components, and update the Iconography section in this file.
 - **Motion:** Define transition durations consistently — `duration-150` for micro-interactions, `duration-300` for panel/modal transitions. Do not mix arbitrary durations.
 
@@ -958,7 +958,7 @@ import { Spinner } from "@/components/ui/spinner"
 - [ ] Brand identity page exists in Notion with tone, colour, typography, and icon decisions
 - [ ] Brand colours are set via `--primary` / `--accent` CSS variables in `globals.css`, not hardcoded in components
 - [ ] `--radius` is set to reflect brand personality
-- [ ] Fonts are imported via `next/font/google` in `layout.tsx` and mapped in `tailwind.config.ts`
+- [ ] Fonts are imported via `next/font/google` in `layout.tsx` and mapped in `globals.css` `@theme inline` block
 - [ ] Dark mode colour variables are defined alongside light mode variables
 - [ ] Icon library matches the brand identity decision; `ui-standards.md` Iconography section is up to date
 - [ ] Motion and transition durations are consistent across components
