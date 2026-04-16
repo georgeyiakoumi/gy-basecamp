@@ -118,7 +118,7 @@ done
 # ── Project type ──────────────────────────────────────────────
 echo ""
 echo -e "${BOLD}What are you building?${RESET}"
-echo -e "  ${CYAN}1)${RESET} Web app        — Next.js + shadcn + Tailwind + Supabase + Netlify"
+echo -e "  ${CYAN}1)${RESET} Web app        — Next.js + shadcn + Tailwind + Netlify"
 echo -e "  ${CYAN}2)${RESET} Marketing site — Next.js + shadcn + Tailwind + Netlify"
 echo -e "  ${CYAN}3)${RESET} Content site   — Next.js + shadcn + Tailwind + Strapi + Render + Netlify"
 echo -e "  ${CYAN}4)${RESET} UI component   — Next.js + shadcn + Tailwind only"
@@ -129,21 +129,12 @@ read -p "$(echo -e ${BOLD})Choose (1-5): $(echo -e ${RESET})" PROJECT_TYPE
 case $PROJECT_TYPE in
   1)
     PROJECT_TYPE_LABEL="Web app"
-    STACK_SUMMARY="Next.js · shadcn/ui · Tailwind CSS · Supabase · Netlify"
-    USE_SUPABASE=true
     USE_NETLIFY=true
     USE_STRAPI=false
-    STACK_BLOCK="| Framework | Next.js (App Router) |
-| Styling | Tailwind CSS |
-| Components | shadcn/ui |
-| Icons | Lucide React |
-| Database | Supabase |
-| Deployment | Netlify |"
     MCP_BLOCK="| **Linear** | Creating/updating issues, logging decisions, tracking progress |
 | **Notion** | Creating/updating the master plan document |
 | **Netlify** | Checking deployment status and environment config |
-| **GitHub** | Repo access, branch/PR status |
-| **Excalidraw** | Generating IA diagrams and user flows |"
+| **GitHub** | Repo access, branch/PR status |"
     ;;
   2)
     PROJECT_TYPE_LABEL="Marketing site"
@@ -217,6 +208,39 @@ case $PROJECT_TYPE in
     ;;
 esac
 
+# ── Supabase (skip for content site — already included; skip for UI/prototype) ──
+if [ "$USE_STRAPI" = false ] && [ "$USE_NETLIFY" = true ]; then
+  echo ""
+  read -p "$(echo -e ${BOLD})Will this project need Supabase (auth / database)? (y/n): $(echo -e ${RESET})" USE_SUPABASE_INPUT
+  if [[ "$USE_SUPABASE_INPUT" == "y" || "$USE_SUPABASE_INPUT" == "Y" ]]; then
+    USE_SUPABASE=true
+  else
+    USE_SUPABASE=false
+  fi
+elif [ "$USE_STRAPI" = true ]; then
+  USE_SUPABASE=true  # Content site always needs Supabase for Strapi
+fi
+
+# ── Build stack summary + block dynamically ───────────────────
+if [ "$PROJECT_TYPE_LABEL" = "Web app" ] || [ "$PROJECT_TYPE_LABEL" = "Marketing site" ]; then
+  if [ "$USE_SUPABASE" = true ]; then
+    STACK_SUMMARY="Next.js · shadcn/ui · Tailwind CSS · Supabase · Netlify"
+    STACK_BLOCK="| Framework | Next.js (App Router) |
+| Styling | Tailwind CSS |
+| Components | shadcn/ui |
+| Icons | Lucide React |
+| Database | Supabase |
+| Deployment | Netlify |"
+  else
+    STACK_SUMMARY="Next.js · shadcn/ui · Tailwind CSS · Netlify"
+    STACK_BLOCK="| Framework | Next.js (App Router) |
+| Styling | Tailwind CSS |
+| Components | shadcn/ui |
+| Icons | Lucide React |
+| Deployment | Netlify |"
+  fi
+fi
+
 # ── Charts ────────────────────────────────────────────────────
 echo ""
 read -p "$(echo -e ${BOLD})Will this project need charts or data visualisation? (y/n): $(echo -e ${RESET})" USE_CHARTS
@@ -260,6 +284,9 @@ echo -e "${BOLD}Summary:${RESET}"
 echo -e "  Name:       ${GREEN}$PROJECT_NAME${RESET}"
 echo -e "  Type:       ${CYAN}$PROJECT_TYPE_LABEL${RESET}"
 echo -e "  Stack:      $STACK_SUMMARY"
+if [ "$USE_SUPABASE" = true ] && [ "$USE_STRAPI" = false ]; then
+  echo -e "  Supabase:   auth + database scaffolding included"
+fi
 if [ "$USE_CHARTS" = true ]; then
   echo -e "  Charts:     Recharts + shadcn Chart"
 fi
@@ -860,6 +887,9 @@ if [ "$USE_DARK_MODE" = true ]; then
 fi
 if [ "$USE_SIDEBAR" = true ]; then
   echo -e "  ${BOLD}Sidebar:${RESET}   CSS variables injected"
+fi
+if [ "$USE_SUPABASE" = true ] && [ "$USE_STRAPI" = false ]; then
+  echo -e "  ${BOLD}Supabase:${RESET}  scaffolding included"
 fi
 echo -e "  ${BOLD}GitHub:${RESET}    https://github.com/georgeyiakoumi/$PROJECT_NAME"
 echo -e "  ${BOLD}Local:${RESET}     $ACTIVE_DIR/$PROJECT_NAME"
