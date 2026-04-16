@@ -3,7 +3,7 @@
 A personal project starter for George Yiakoumi — combining a production-ready Next.js scaffold with a Claude Code assistant configured for UX/product design work.
 
 Every new project created from this template gets:
-- A running Next.js + shadcn/ui + Tailwind + Supabase + Netlify codebase
+- A running Next.js + shadcn/ui + Tailwind CSS codebase, scaffolded to your choices
 - A Claude Code assistant that runs a structured project setup routine on first open
 - Automatic MCP connectivity checks (Linear, Notion, Netlify, GitHub)
 - A master plan synced to Notion and a Linear project with issues created before any code is written
@@ -54,12 +54,13 @@ new-project
 ```
 
 The script will:
-1. Ask for a project name (kebab-case) and visibility (private/public)
-2. Create a new GitHub repo from this template
-3. Clone it locally
-4. Run `npm install`
-5. Copy `.env.example` → `.env.local`
-6. Open the project in VS Code
+1. Ask for a project name and type (web app / marketing site / content site / UI component / prototype)
+2. Ask about add-ons: Supabase, charts, sidebar, dark mode, visibility
+3. Create a new GitHub repo from this template
+4. Clone it and configure the scaffold to match your choices
+5. Run `npm install`
+6. Copy `.env.example` → `.env.local`
+7. Open the project in VS Code
 
 ---
 
@@ -80,7 +81,7 @@ You don't need to do anything to trigger this. Just open the Claude Code panel a
 
 ## Environment variables
 
-After the script runs, open `.env.local` and fill in your Supabase credentials:
+After the script runs, open `.env.local`. If you included Supabase, fill in your credentials:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
@@ -88,7 +89,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-Find these in your Supabase project under **Settings → API**.
+Find these in your Supabase project under **Settings → API**. If you skipped Supabase, `.env.local` only contains `NEXT_PUBLIC_APP_URL` — no other config needed.
 
 Then start the dev server:
 
@@ -106,9 +107,8 @@ This template is configured for Netlify via `netlify.toml`. To connect a new pro
 2. Go to [netlify.com](https://netlify.com) → Add new site → Import from GitHub
 3. Select the repo — build settings are pre-configured
 4. Add environment variables in **Site → Environment variables**:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `NEXT_PUBLIC_APP_URL` (your Netlify URL or custom domain)
+   - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (if Supabase was included)
 5. Deploy
 
 The Netlify MCP can also check deployment status and environment config directly from Claude Code during the project setup routine.
@@ -132,10 +132,10 @@ The Netlify MCP can also check deployment status and environment config directly
 │   └── ui/                     ← shadcn components land here (via npx shadcn add)
 ├── lib/
 │   ├── utils.ts                ← cn() helper
-│   └── supabase/
+│   └── supabase/               ← Present only if Supabase was included
 │       ├── client.ts           ← Browser Supabase client
 │       └── server.ts           ← Server Supabase client (App Router)
-├── supabase/
+├── supabase/                   ← Present only if Supabase was included
 │   └── config.toml             ← Local Supabase dev config
 ├── public/
 ├── .env.example                ← Copy to .env.local and fill in keys
