@@ -131,6 +131,51 @@ test('homepage loads', async ({ page }) => {
 
 ---
 
+## Phase 1c — Skills and MCP scan
+
+Once the stack is confirmed (from CLAUDE.md header), scan for relevant skills and MCPs and surface anything useful before work begins. This is a proactive check — not a gate.
+
+**Skill scan:**
+
+Search available skills and flag any that are relevant to this project's stack:
+
+| Condition | Skill to invoke |
+|---|---|
+| Any project | `shadcn` — for all component work |
+| Any project | `next-best-practices` — for Next.js file conventions and patterns |
+| Supabase included | `supabase-postgres-best-practices` — invoke when designing schema or writing queries |
+| Marketing site or copywriting needed | `copywriting` — for landing pages, CTAs, headlines |
+| Frontend design work | `frontend-design` — for distinctive, high-quality UI |
+| Building with Claude API | `claude-api` — for any AI integration work |
+
+Surface which skills are available and note which ones apply to this project. Do not invoke them now — just flag them so George knows they exist and when to use them.
+
+**MCP scan:**
+
+Beyond the required MCPs already checked in Phase 1, scan for any additional MCPs that might be relevant:
+
+- If Supabase is included — is a Supabase MCP available?
+- If the project uses a third-party service — is there an MCP for it?
+- Any other connected MCPs that weren't in the required list but could be useful?
+
+Report what's available. If a relevant MCP is missing, note it — but do not block on it.
+
+**Expected output:**
+```
+Skills available for this project
+──────────────────────────────────
+✅ shadcn             — use for all component work
+✅ next-best-practices — use for Next.js patterns
+✅ supabase-postgres-best-practices — use when writing schema/queries
+[others if relevant]
+
+Additional MCPs
+───────────────
+[Any beyond Linear / Notion / Netlify / GitHub]
+```
+
+---
+
 ## Phase 2 — Project scoping
 
 Before creating anything in Linear or Notion, establish the project scope through conversation. Ask George for any details that aren't already clear:
@@ -315,6 +360,20 @@ After each milestone, note the passing test count in a Linear comment. This numb
 
 ### Database work (Supabase)
 When any work involves writing queries, designing schema, or optimising database performance, invoke the `supabase-postgres-best-practices` skill. This applies from the first time a table is created — schema decisions made early are expensive to undo later.
+
+### README — rewrite it for this project
+
+The `README.md` created by `create-project.sh` is a scaffold placeholder. Before any code is committed, replace it with a README that reflects the actual project.
+
+A good project README covers:
+- **What it is** — one paragraph, plain English, no jargon
+- **Who it's for** — the primary user type(s) from the personas
+- **Stack** — the actual stack for this project (from CLAUDE.md header)
+- **Getting started** — `npm run dev`, env vars to fill in
+- **Deployment** — how to deploy, where it lives
+- **Repo structure** — the actual structure, not a generic template
+
+Write this once scoping is complete (after Phase 2) and keep it up to date as the project evolves. A README that accurately describes the project is useful to future-you, collaborators, and anyone reading the case study.
 
 ### Throughout all stages
 - Update the relevant Linear issue status as work progresses
