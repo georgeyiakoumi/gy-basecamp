@@ -250,6 +250,15 @@ else
   USE_CHARTS=false
 fi
 
+# ── Shiki ────────────────────────────────────────────────────
+echo ""
+read -p "$(echo -e ${BOLD})Will this project display code on the frontend? (y/n): $(echo -e ${RESET})" USE_SHIKI
+if [[ "$USE_SHIKI" == "y" || "$USE_SHIKI" == "Y" ]]; then
+  USE_SHIKI=true
+else
+  USE_SHIKI=false
+fi
+
 # ── Sidebar ───────────────────────────────────────────────────
 echo ""
 read -p "$(echo -e ${BOLD})Will this project use a sidebar layout? (y/n): $(echo -e ${RESET})" USE_SIDEBAR
@@ -289,6 +298,9 @@ if [ "$USE_SUPABASE" = true ] && [ "$USE_STRAPI" = false ]; then
 fi
 if [ "$USE_CHARTS" = true ]; then
   echo -e "  Charts:     Recharts + shadcn Chart"
+fi
+if [ "$USE_SHIKI" = true ]; then
+  echo -e "  Shiki:      syntax highlighting"
 fi
 if [ "$USE_SIDEBAR" = true ]; then
   echo -e "  Sidebar:    shadcn Sidebar + CSS variables"
@@ -571,6 +583,8 @@ DARK_MODE_FLAG="true"
 if [ "$USE_DARK_MODE" = false ]; then DARK_MODE_FLAG="false"; fi
 SIDEBAR_FLAG="false"
 if [ "$USE_SIDEBAR" = true ]; then SIDEBAR_FLAG="true"; fi
+SHIKI_FLAG="false"
+if [ "$USE_SHIKI" = true ]; then SHIKI_FLAG="true"; fi
 
 cat > CLAUDE.md << EOF
 # Project: $PROJECT_NAME
@@ -578,6 +592,7 @@ cat > CLAUDE.md << EOF
 **Created:** $(date +%Y-%m-%d)
 **Dark mode:** $DARK_MODE_FLAG
 **Sidebar:** $SIDEBAR_FLAG
+**Shiki:** $SHIKI_FLAG
 
 ## Stack
 
@@ -847,6 +862,13 @@ if [ "$USE_CHARTS" = true ]; then
   echo -e "${GREEN}✓ Chart component added${RESET}"
 fi
 
+# ── Install Shiki if code display enabled ─────────────────────
+if [ "$USE_SHIKI" = true ]; then
+  echo -e "${BLUE}Installing Shiki...${RESET}"
+  npm install shiki
+  echo -e "${GREEN}✓ Shiki installed${RESET}"
+fi
+
 # ── Set up .env.local ─────────────────────────────────────────
 if [ -f ".env.example" ]; then
   cp .env.example .env.local
@@ -887,6 +909,9 @@ if [ "$USE_DARK_MODE" = true ]; then
 fi
 if [ "$USE_SIDEBAR" = true ]; then
   echo -e "  ${BOLD}Sidebar:${RESET}   CSS variables injected"
+fi
+if [ "$USE_SHIKI" = true ]; then
+  echo -e "  ${BOLD}Shiki:${RESET}     syntax highlighting installed"
 fi
 if [ "$USE_SUPABASE" = true ] && [ "$USE_STRAPI" = false ]; then
   echo -e "  ${BOLD}Supabase:${RESET}  scaffolding included"
