@@ -188,19 +188,39 @@ Service MCPs (beyond required set)
 
 ---
 
-## Phase 2 — Project scoping
+## Phase 2 — Discovery
 
-Before creating anything in Linear or Notion, establish the project scope through conversation. Ask George for any details that aren't already clear:
+**This phase is mandatory before scoping, design, or any code work. It is not optional and cannot be skipped or abbreviated.**
 
-**Scoping questions (ask only what isn't already known):**
+Load and run `.claude/discovery.md` in full. It covers:
+- Problem framing — what problem is actually being solved, for whom
+- Assumption mapping — risks ranked by severity and ease to validate
+- Competitive research — web research + Notion competitor database + gap analysis
+- User insight — what's known vs assumed
+- Validation plan — the 3 questions that would change everything
+- Discovery Summary — written to Notion before proceeding
+
+**Discovery is complete when all boxes on the completion gate in `discovery.md` are checked.**
+
+If George tries to skip this phase or move directly to scoping, say clearly:
+> "Discovery isn't done yet. Moving to build before this is complete is the most common reason projects get rebuilt from scratch three months later. What would you like to tackle next from the checklist?"
+
+---
+
+## Phase 3 — Project scoping
+
+Discovery complete? Only then proceed here.
+
+Before creating anything in Linear or Notion, confirm scope through conversation. The discovery work should have answered most of these — only ask what isn't already clear:
+
 - What is the project? One-sentence description.
-- Who is it for? Primary user type(s).
+- Who is it for? (Should already be established in discovery — confirm it.)
 - What does success look like? Key outcomes, not features.
 - What's the rough timeline or deadline?
 - Are there any known constraints — technical, design, or otherwise?
 - Which design reference files apply? (Check against `CLAUDE.md` routing table)
 
-Do not over-question. If context from the conversation already answers these, skip them.
+Do not over-question. If discovery already answered these, skip them.
 
 ---
 
@@ -214,6 +234,16 @@ Once scope is clear, create the master plan document in Notion. This is the sing
 
 ## Overview
 One paragraph: what this is, who it's for, what success looks like.
+
+## Discovery Summary
+Pull directly from the Discovery session output:
+- Problem statement (one sentence)
+- Target user (with evidence level: observed / told / assumed)
+- Success metrics
+- Top assumptions + risk ratings
+- Differentiation thesis
+- Validation plan (top 3 questions)
+- Open questions from discovery
 
 ## Goals
 - Primary goal
@@ -260,7 +290,7 @@ After creating the document, share the Notion URL with George for review before 
 
 ---
 
-## Phase 4 — Linear project + issues
+## Phase 5 — Linear project + issues
 
 Once George has confirmed the Notion plan, create the corresponding structure in Linear.
 
@@ -307,7 +337,7 @@ If the answer reveals a missing foundation — something multiple other issues a
 
 ---
 
-## Phase 5 — Begin work
+## Phase 6 — Begin work
 
 With MCPs verified, plan documented in Notion, and issues created in Linear, begin the first task following the order below. Do not skip ahead — each stage feeds the next.
 

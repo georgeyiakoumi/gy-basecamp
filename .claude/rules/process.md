@@ -135,9 +135,23 @@ If the conversation has been compacted (context window was compressed), do the f
 
 1. **Re-read `CLAUDE.md`** — re-establish the project stack, principles, and routing.
 2. **Re-read `.claude/rules/code.md`** — re-load non-negotiable code constraints.
-3. **Re-read `.claude/rules/design.md`** — re-load non-negotiable design constraints.
+3. **Re-read `.claude/rules/design.md`** — re-load non-negotiable design constraints including the honesty and self-evaluation rules.
 4. **Re-read this file (`.claude/rules/process.md`)** — re-load process rules and MCP/skill tables.
-5. **Check the current Linear issue** — confirm which issue is in progress and re-read its acceptance criterion.
-6. **Check the Lessons & Insights page** — if anything from the compacted session warrants a lesson that wasn't written, write it now.
+5. **Re-read the Discovery Summary in Notion** — fetch the project's master plan page and re-read the Discovery Summary section. Every design and build decision must be informed by the validated problem statement, target user, differentiation thesis, and open questions. Do not design or build anything without this context.
+6. **Check the current Linear issue** — confirm which issue is in progress and re-read its acceptance criterion.
+7. **Check the Lessons & Insights page** — if anything from the compacted session warrants a lesson that wasn't written, write it now.
 
 Do not assume that rules from the previous session context survived compaction intact. Re-read the files. This takes 2 minutes and prevents hours of drift.
+
+---
+
+## Before every design or build decision — research check
+
+Before designing any user-facing surface or making a significant implementation decision:
+
+1. **Is the Discovery Summary loaded?** If not, fetch it from Notion now.
+2. **Does this decision align with the validated problem statement and target user?** If not, name the tension before proceeding.
+3. **Does this decision conflict with what competitive research revealed?** If you're doing something a competitor already does well, there should be a reason.
+4. **Does this decision reflect the differentiation thesis?** If the product's edge is X, every design decision should either support X or at minimum not contradict it.
+
+This check takes 30 seconds. Skipping it is how products drift away from their core proposition one small decision at a time.

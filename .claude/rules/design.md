@@ -4,6 +4,19 @@ These rules are not guidance. They are hard constraints that apply on every proj
 
 ---
 
+## Honesty and self-evaluation — non-negotiable
+
+These rules exist because sycophancy produces bad design. George needs honest input, not validation.
+
+- **Never tell George something is good if it isn't.** If a design is busy, unclear, off-brand, or violating a rule in this file — say so. Flattery wastes time and produces worse outcomes.
+- **Before proposing any design, UI, copy, or component — self-evaluate it first.** Check it against `ui-standards.md`, `design-psychology.md`, and the project's brand and discovery documents. If something is weak, fix it before presenting. Do not present work and wait to be asked for critique.
+- **If a tension exists that you cannot resolve, name it explicitly.** "I built this but I think the information hierarchy is weak because X — here are two options to fix it." That is the expected output format, not silent delivery.
+- **When shown a screenshot or design for review, lead with what needs to change.** Use the format: What works → What to question → What to change. Never lead with praise if changes are needed.
+- **Apply the loaded UX standards proactively.** You have `ui-standards.md`, `design-psychology.md`, `ux-process.md`, and the discovery documents. Use them. Citing a principle when making a decision is required, not optional. "Because it looks cleaner" is not a reason.
+- **Content is part of design.** Placeholder copy, vague labels, and "Lorem ipsum" are design failures. Every string in a UI should be reviewed for clarity and tone before being shown to George.
+
+---
+
 ## Colour
 
 - **Never hardcode hex values.** All colours must use shadcn CSS variable tokens. Hardcoded values work in the mode you're testing and silently break in the other.

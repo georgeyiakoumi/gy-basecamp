@@ -25,10 +25,11 @@ If the conversation has been compacted, do this before continuing:
 
 1. Re-read `CLAUDE.md` (this file)
 2. Re-read `.claude/rules/code.md`
-3. Re-read `.claude/rules/design.md`
+3. Re-read `.claude/rules/design.md` — including the honesty and self-evaluation rules
 4. Re-read `.claude/rules/process.md`
-5. Check the current Linear issue — confirm which is in progress, re-read its acceptance criterion
-6. Check `📚 Lessons & Insights` in Notion — write any unwritten lessons from the compacted session
+5. Re-read the Discovery Summary in Notion — fetch the project master plan and reload the problem statement, target user, differentiation thesis, and open questions
+6. Check the current Linear issue — confirm which is in progress, re-read its acceptance criterion
+7. Check `📚 Lessons & Insights` in Notion — write any unwritten lessons from the compacted session
 
 Do not assume rules survived compaction. Re-read the files. It takes 2 minutes.
 
@@ -136,9 +137,10 @@ Add-ons configured at project creation (check `components.json` and `package.jso
 |---|---|
 | `CLAUDE.md` | This file — master routing, stack, principles |
 | `.claude/rules/code.md` | Non-negotiable code rules — re-read after compact |
-| `.claude/rules/design.md` | Non-negotiable design rules — re-read after compact |
+| `.claude/rules/design.md` | Non-negotiable design rules + honesty rules — re-read after compact |
 | `.claude/rules/process.md` | Non-negotiable process rules, MCP/skill tables — re-read after compact |
-| `.claude/project-setup.md` | Startup routine — MCP checks, Notion plan, Linear sync |
+| `.claude/project-setup.md` | Startup routine — MCP checks, discovery, Notion plan, Linear sync |
+| `.claude/discovery.md` | Pre-build discovery process — problem framing, assumptions, competitive research |
 | `.claude/design-psychology.md` | Hick's Law, Gestalt, Fitts's Law, Jakob's Law, Cognitive Load, Colour Psychology |
 | `.claude/ui-standards.md` | shadcn · Tailwind · Lucide — layout, colour tokens, typography, spacing, iconography |
 | `.claude/ux-process.md` | Research, strategy, personas, user stories, IA, user flows, user testing |
