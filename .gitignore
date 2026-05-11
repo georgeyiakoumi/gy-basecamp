@@ -29,3 +29,7 @@ yarn-error.log*
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# Installed skills (local, not committed)
+.agents/
+.claude/skills/

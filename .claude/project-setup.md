@@ -7,32 +7,41 @@ Work through each phase in order. Do not skip ahead to design or code until phas
 
 ## Phase 1 — MCP connectivity check
 
-Before anything else, verify that the required MCPs are reachable. Report the status of each clearly.
+Before anything else, verify that the required MCPs are reachable. A missing MCP is not a warning — it is a **hard stop**.
 
-**Required connections:**
+**How to check (follow this order exactly):**
 
-| MCP | Purpose | Required? | When needed |
-|---|---|---|---|
-| Linear | Project tracking, issues, milestones | Yes | Phase 4 onwards |
-| GitHub | Repo access, branch status, PR state | Yes | Phase 4 onwards |
-| Notion | Master plan documentation | Yes | Phase 3 onwards |
+1. **Search for available tools** using the deferred tools mechanism. Cloud MCPs are loaded as deferred tools and will not appear until you explicitly search for them. Search for each by name before concluding it's missing.
 
-| Netlify | Deployment status and environment config | If project uses Netlify | Deployment stage |
+2. **Attempt a lightweight call** to each found MCP (list teams in Linear, search in Notion, list commits in GitHub). A successful response confirms the connection is live.
 
-**How to check (important — follow this order):**
+3. **Classify each MCP into exactly one of three states:**
 
-1. **First, search for available tools** using the tool search / deferred tools mechanism. Cloud MCPs (Linear, Notion, Netlify, GitHub) are loaded as deferred tools and may not appear until you explicitly search for them. Search for each by name before concluding it's missing.
+| State | Meaning | Action |
+|---|---|---|
+| ✅ Connected | Tool found, call succeeded | Proceed |
+| ⚠️ Transient error | Tool found, call returned 502/timeout | Note it, retry later, proceed cautiously |
+| ❌ Not configured | Tool not found after searching | **Hard stop — see below** |
 
-2. **Then attempt a lightweight call** to each found MCP (e.g. list teams in Linear, search in Notion, list commits in GitHub). A successful response confirms the connection is live.
+**If any required MCP is ❌ not configured:**
+- Stop. Do not proceed to scoping, design, or code.
+- Tell George exactly which MCP is missing and why it's required.
+- Provide the exact setup path: VS Code → Claude Code extension → MCP Servers panel. All required MCPs are cloud MCPs added via the VS Code extension — not config files.
+- Wait for George to confirm it's been added, then re-check before continuing.
 
-3. **Distinguish between three states:**
-   - ✅ **Connected** — tool found and call succeeded
-   - ⚠️ **Temporarily unavailable** — tool found but call returned an error (502, timeout, etc.). This is usually a transient proxy issue — note it and retry later. Do not block on this.
-   - ❌ **Not configured** — tool not found even after searching. Flag to George.
+> **Why this is a hard stop:** Proceeding without a required MCP means falling back to training knowledge instead of the authoritative source. Training knowledge may be stale, incomplete, or wrong. This produces guesswork dressed as confidence.
 
-4. **Do not block project scoping on transient errors.** If an MCP returns a 502 or timeout, note it and proceed. These are cloud-hosted MCPs that may have momentary outages. Only stop if the MCP is genuinely not configured (no tools found at all).
+**Required MCPs — check all of these:**
 
-5. Also list any additional MCPs that are connected beyond the required set, in case they're relevant.
+| MCP | Required for | Hard stop if missing? |
+|---|---|---|
+| Linear | All projects — issue tracking, decisions | Yes |
+| Notion | All projects — master plan documentation | Yes |
+| GitHub | All projects — repo access, PR status | Yes |
+| Netlify | Projects deploying to Netlify | Yes if Netlify is in stack |
+| Supabase | Projects with Supabase in stack | Yes if Supabase is in stack |
+
+**Also list any additional MCPs connected beyond this set** — they may be relevant.
 
 **Expected output:**
 ```
@@ -41,16 +50,11 @@ MCP Status
 ✅ Linear     — connected (workspace: [name])
 ✅ GitHub     — connected (repo: [name])
 ✅ Notion     — connected
-
 ✅ Netlify    — connected
+✅ Supabase   — connected   (if applicable)
 ⚠️ [Other]   — connected but verify it's needed
+❌ [Name]     — NOT CONFIGURED — hard stop, see above
 ```
-
-**If an MCP is not configured (❌):**
-- Flag it to George with the specific MCP name
-- George can add it via the MCP servers panel in VS Code (Claude Code extension settings)
-- All required MCPs are cloud MCPs managed through the Claude AI integration — they are added via the VS Code extension, not config files
-- Once added, it will be available in all projects automatically
 
 ---
 
@@ -133,45 +137,53 @@ test('homepage loads', async ({ page }) => {
 
 ## Phase 1c — Skills and MCP scan
 
-Once the stack is confirmed (from CLAUDE.md header), scan for relevant skills and MCPs and surface anything useful before work begins. This is a proactive check — not a gate.
+Once the stack is confirmed, scan for relevant skills and MCPs. This is **not a discovery exercise** — skills that apply to this project must be invoked before work begins in their domain, not just noted.
 
-**Skill scan:**
+**Skill scan — invoke, don't just flag:**
 
-Search available skills and flag any that are relevant to this project's stack:
+Search available skills and confirm which apply to this project's stack:
 
-| Condition | Skill to invoke |
-|---|---|
-| Any project | `shadcn` — for all component work |
-| Any project | `next-best-practices` — for Next.js file conventions and patterns |
-| Supabase included | `supabase-postgres-best-practices` — invoke when designing schema or writing queries |
-| Marketing site or copywriting needed | `copywriting` — for landing pages, CTAs, headlines |
-| Frontend design work | `frontend-design` — for distinctive, high-quality UI |
-| Building with Claude API | `claude-api` — for any AI integration work |
+| Condition | Skill | When to invoke |
+|---|---|---|
+| Any project | `shadcn` | Before any component work |
+| Any project | `next-best-practices` | Before Phase 1b stack verification |
+| Supabase included | `supabase-postgres-best-practices` | Before first table or query |
+| Marketing site / landing page | `copywriting` | Before writing any conversion copy |
+| Frontend UI design work | `frontend-design` | Before high-fidelity UI work |
+| Claude API integration | `claude-api` | Before any AI integration code |
 
-Surface which skills are available and note which ones apply to this project. Do not invoke them now — just flag them so George knows they exist and when to use them.
+For each applicable skill: confirm it is available. If a skill is listed as applicable but not yet installed, use `find-skills` to locate and install it now — before starting work.
 
-**MCP scan:**
+> **Why mandatory invocation matters:** Using training knowledge instead of an available skill produces guesswork. Skills contain authoritative, up-to-date usage patterns, component APIs, and best practices. A skill that exists but isn't invoked provides zero benefit.
 
-Beyond the required MCPs already checked in Phase 1, scan for any additional MCPs that might be relevant:
+**MCP scan — check for service-specific MCPs:**
 
-- If Supabase is included — is a Supabase MCP available?
-- If the project uses a third-party service — is there an MCP for it?
-- Any other connected MCPs that weren't in the required list but could be useful?
+Beyond the required MCPs checked in Phase 1, scan for any service-specific MCPs relevant to this project's stack. For each third-party service in the project:
 
-Report what's available. If a relevant MCP is missing, note it — but do not block on it.
+1. Search `registry.modelcontextprotocol.io` for the service name
+2. Check the Anthropic-curated list at `https://code.claude.ai/docs/mcp` (Claude Code docs MCP table)
+3. Classify any found MCP by source tier:
+   - **Tier 1 — Official vendor** (published by the company that makes the service) — always prefer
+   - **Tier 2 — Anthropic-curated** (in the Claude Code docs MCP table or Anthropic subregistry)
+   - **Tier 3 — Community** (in the registry but not from the official vendor — use with caution, note provenance)
+4. If a Tier 1 or Tier 2 MCP is found: surface the name, tier, and install command. Flag to George and wait for it to be added before working with that service.
+5. If only a Tier 3 MCP is found: surface it, note it is community-sourced, and let George decide.
+6. If no MCP is found: note explicitly ("No official MCP found for [service]") and proceed.
 
 **Expected output:**
 ```
-Skills available for this project
-──────────────────────────────────
-✅ shadcn             — use for all component work
-✅ next-best-practices — use for Next.js patterns
-✅ supabase-postgres-best-practices — use when writing schema/queries
-[others if relevant]
+Skills — confirmed available and applicable
+────────────────────────────────────────────
+✅ shadcn                          — invoke before any component work
+✅ next-best-practices             — invoke before stack verification
+✅ supabase-postgres-best-practices — invoke before schema/query work
+⚠️ frontend-design                — not installed — running find-skills to install
 
-Additional MCPs
-───────────────
-[Any beyond Linear / Notion / Netlify / GitHub]
+Service MCPs (beyond required set)
+────────────────────────────────────
+✅ Supabase MCP  — Tier 1 (official) — already configured
+ℹ️ [Service]    — Tier 2 MCP found: [name + install command] — flagging to George
+⚠️ [Service]    — No official MCP found — proceeding with skill/training knowledge
 ```
 
 ---
@@ -380,6 +392,24 @@ Write this once scoping is complete (after Phase 2) and keep it up to date as th
 - Log decisions and trade-offs as comments on the Linear issue — not just in conversation
 - If scope changes materially, update the Notion document first, then adjust Linear issues to match
 
+### New service or package added mid-project — mandatory check
+
+Any time a new package is installed (`npm install [x]`) or a new third-party service is introduced **after the initial setup phase**, pause and run this check before writing any implementation code:
+
+**Step 1 — Skill check:**
+1. Does a skill exist for this service or library? Search available skills.
+2. If yes — invoke it before writing any code for that service.
+3. If no — run `find-skills` to search for one. If installable, install it first.
+
+**Step 2 — MCP check:**
+1. Search `registry.modelcontextprotocol.io` for the service name.
+2. Prioritise by tier: Tier 1 (official vendor) > Tier 2 (Anthropic-curated) > Tier 3 (community).
+3. If Tier 1 or Tier 2 found: surface name, tier, install command. Stop and wait for George to add it.
+4. If Tier 3 only: surface it, note it is community-sourced, let George decide.
+5. If nothing found: note it explicitly and proceed.
+
+**Never silently start implementing a new service.** The check takes 60 seconds. Discovering mid-feature that training knowledge was wrong costs hours.
+
 ---
 
 ---
@@ -489,3 +519,79 @@ Doing only (1) is **worse than doing neither** — dead implementation creates a
 ### Test suite hygiene
 
 Update test selectors and assertions in the **same PR** that changes the UI — not as a follow-up. A test suite allowed to drift loses its value as a regression signal. When test results drop dramatically (e.g. 40 passing → 11 passing), check the test environment before reading the code — a stale dev server, build cache, or polluted port is often the culprit.
+
+### Never use `next/dynamic` for components that render during client-side navigation
+
+`next/dynamic` with `dynamicIconImports` or similar patterns causes silent hydration failures that freeze the browser during client-side navigation. No console errors — just a dead page. Use static imports or object lookups instead:
+
+```tsx
+// ❌ Crashes silently during client-side navigation
+const Icon = dynamic(() => import('lucide-react').then(m => ({ default: m[name] })))
+
+// ✅ Static object lookup — same API, no crashes
+import { icons } from 'lucide-react'
+const Icon = icons[name]
+```
+
+This applies to any component that renders during navigation — not just icons. If a page goes dead after navigating to it with no console errors, check for `next/dynamic` usage on that page.
+
+### Fix the layout — don't hack around it
+
+If centring or sizing a layout element requires `min-h-[calc(100svh-Xrem)]` or similar calc hacks, the parent layout is wrong. Fix the parent:
+
+```tsx
+// ❌ Hack — fighting the parent layout
+<div className="min-h-[calc(100svh-4rem)] flex items-center justify-center">
+
+// ✅ Fix — give the parent flex context so children can use flex-1
+<main className="flex flex-1 flex-col">          {/* parent needs this */}
+  <div className="flex flex-1 items-center justify-center">  {/* child works naturally */}
+```
+
+If it feels hacky, fix the parent. `calc()` hacks for layout sizing are always a symptom, never a solution.
+
+### Restore working code — don't rebuild from scratch
+
+When something worked before and doesn't now, use `git` to find and restore the working version before rewriting:
+
+```bash
+git log --oneline -- path/to/file.tsx   # find the last working commit
+git show <commit>:path/to/file.tsx      # inspect it
+git checkout <commit> -- path/to/file.tsx  # restore it
+```
+
+Test the restored file. If it works, the bug is elsewhere. Never rewrite a component to "fix" a bug that isn't in that component. Rewrites introduce new bugs and destroy the signal of what actually changed.
+
+### Don't build features that need infrastructure not yet in place
+
+Before starting any feature that depends on external infrastructure — OAuth providers, push notification services, native platform APIs, third-party accounts, paid API keys — confirm the infrastructure exists and is testable. If it isn't, note the feature as blocked and move on. Building a feature and then discovering it can't be tested wastes implementation time and produces code that can't be verified.
+
+**Checklist before starting any integration feature:**
+- [ ] Required accounts / credentials exist
+- [ ] The feature can be tested in the current environment (not just in production)
+- [ ] Any required build configuration is in place
+
+If any answer is no — mark the issue as blocked, note what's missing, and move to the next issue.
+
+### Netlify deploy budget — disable auto-publishing during active development
+
+Netlify's free tier gives **300 build credits/month**. Each Next.js build costs ~10 credits, meaning ~30 deploys per month. During active development it's easy to burn through the entire month's budget in one session.
+
+**Rules:**
+- Disable auto-publishing at the start of every project: **Site settings → Build & deploy → Stop auto publishing**
+- Work locally and push to GitHub freely — only trigger Netlify deploys manually when ready to ship
+- Batch changes: multiple commits locally, one deploy
+- If credits run out, all deploys are paused with no way to resume until the billing cycle resets
+
+**Alternative:** For Next.js projects, Vercel has no credit system and a more generous free tier.
+
+### Supabase + Render: always use Session Pooler
+
+If the project uses Render (for Strapi or any other service) connecting to Supabase, **use the Session Pooler connection string**, not the Direct Connection. Render resolves Supabase's direct connection hostname to an IPv6 address it cannot reach, causing `ENETUNREACH` errors on every deploy.
+
+**Session Pooler settings (from Supabase dashboard):**
+- Host: `aws-X-[region].pooler.supabase.com`
+- Port: check the Supabase UI — do not assume
+- Username: `postgres.[project-ref]`
+
+Things that do **not** fix the direct connection issue: `--dns-result-order=ipv4first`, pinning Node version, changing Render region.

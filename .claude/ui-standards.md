@@ -75,11 +75,23 @@ border-border        border-input        ring-ring
 - Maintain WCAG AA contrast: 4.5:1 for body text, 3:1 for UI components and large text
 - Use `destructive` for all destructive actions — never red as a one-off colour choice
 - Use colour to reinforce meaning, not as decoration — if a colour isn't communicating something, remove it
+- **Never hardcode hex values.** Any time you write a raw `#hex` or `rgb()` value in a component, that's a bug. Use a shadcn token. Hardcoded values are invisible debt: they work in the mode you're testing in and silently break in the other.
+- **Reserve `primary` for interactive elements only.** Buttons, links, active states, selected indicators — these use `primary`. Status indicators, decorative highlights, and informational elements must use semantic tokens (`muted`, `accent`, `success`, `destructive`) or reduced opacity. If a non-interactive element uses `primary`, users will try to tap/click it and feel confused when nothing happens.
+
+**Colour hierarchy:**
+```
+primary           → "tap me" — CTAs, links, selected state
+destructive       → "danger" — delete, irreversible actions
+success / green   → "good" — completed, confirmed, positive
+muted-foreground  → "context" — metadata, timestamps, supporting info
+accent            → "hover / selected" — not for status
+```
 
 **Questions to ask:**
 - Are we using shadcn token names, or hardcoded hex values?
 - Does this work correctly in dark mode?
 - Does the layout communicate clearly in greyscale?
+- Does anything non-interactive use `primary`? If so, change it.
 
 ---
 
@@ -190,6 +202,14 @@ Page horizontal padding:         px-4 (mobile) / px-6 (md) / px-8 (lg)
 - Use `gap-*` for flex/grid children rather than applying margins to individual items
 - Use `space-y-*` for stacked vertical content where a gap utility isn't applicable
 - Increase spacing between unrelated sections relative to spacing within them — whitespace communicates grouping
+
+**Tailwind v4 — CSS variable arbitrary value syntax:**
+In Tailwind v4, referencing a CSS variable in an arbitrary value uses **parentheses**, not brackets:
+```
+✅  w-(--sidebar-width)       →  width: var(--sidebar-width)
+❌  w-[--sidebar-width]       →  outputs the raw token, not var() — silent layout failure
+```
+This affects any `w-`, `h-`, `max-w-`, `min-h-`, `gap-`, `p-`, etc. that reference a CSS variable. It will **not** produce a build error — it silently outputs an invalid CSS value, causing elements to collapse to zero width or overlap. If a layout looks broken with elements overlapping or collapsing, check arbitrary CSS variable references first.
 
 **Questions to ask:**
 - Are all spacing values from the Tailwind scale, or are there arbitrary values that should be revisited?
@@ -562,6 +582,10 @@ The `shadcn` skill has a full component selection table. The components below ar
 | Raw `<button>` with padding for icon actions | `<Button size="icon">` or `<Button size="icon-sm">` |
 
 **The rule:** Before building anything custom, run `npx shadcn@latest search` to check if a component exists. If it does, use it. If it doesn't quite fit, compose or extend it before reaching for custom markup.
+
+**Search by concept, not assumed name.** A component may exist under a different name than you expect. Search for the concept keyword (`empty`, `toast`, `badge`, `field`) not the assumed component name (`EmptyState`, `ToastContainer`). Also check `components/ui/` directly and search for usage patterns (`<Empty`, `<Toast`) across the codebase. Only build new if genuinely not found after a broad search.
+
+**Never write raw HTML when a shadcn component exists.** A raw `<select>` instead of `<Select>`, a `<div>` + `<label>` instead of `<Field>` + `<FieldLabel>`, a `<button>` instead of `<Button>` — these are code smells in a shadcn project. They produce inconsistent styling, miss built-in accessibility wiring, and drift visually from every other component on the screen. The cost of checking the library is 30 seconds. The cost of debugging an inconsistency or a runtime error from a hand-rolled duplicate is 30 minutes.
 
 ---
 

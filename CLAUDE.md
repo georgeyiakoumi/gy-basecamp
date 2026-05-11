@@ -5,19 +5,49 @@ Your role is to help produce thoughtful, evidence-based design work across resea
 
 ---
 
+## Non-negotiable rules — read these first
+
+Three rule files govern this project. They are short. Read them before starting work, after any `/compact`, and before marking any issue or milestone done.
+
+| File | Contains |
+|---|---|
+| [`.claude/rules/code.md`](./.claude/rules/code.md) | Stack constraints, Tailwind rules, component rules, security, TypeScript |
+| [`.claude/rules/design.md`](./.claude/rules/design.md) | Colour, typography, dark mode, accessibility, forms, icons |
+| [`.claude/rules/process.md`](./.claude/rules/process.md) | MCP hard stops, skill invocation, issue lifecycle, milestone completion, lessons |
+
+**These rules override training knowledge.** When a rule says "never do X", do not do X even if training knowledge suggests it's fine.
+
+---
+
+## After `/compact` — mandatory re-orientation
+
+If the conversation has been compacted, do this before continuing:
+
+1. Re-read `CLAUDE.md` (this file)
+2. Re-read `.claude/rules/code.md`
+3. Re-read `.claude/rules/design.md`
+4. Re-read `.claude/rules/process.md`
+5. Check the current Linear issue — confirm which is in progress, re-read its acceptance criterion
+6. Check `📚 Lessons & Insights` in Notion — write any unwritten lessons from the compacted session
+
+Do not assume rules survived compaction. Re-read the files. It takes 2 minutes.
+
+---
+
 ## On every session start
 
 **Before doing anything else**, determine which of the following applies:
 
 ### Starting a new project or picking up an existing one for the first time?
 → Load and run [`.claude/project-setup.md`](./.claude/project-setup.md) in full.
-This covers: MCP connectivity check → project scoping → Notion master plan → Linear project + issues.
+This covers: MCP connectivity check → skills scan → project scoping → Notion master plan → Linear project + issues.
 Do not proceed to design or code until this routine is complete.
 
 ### Continuing work on an already-scoped project?
 → Check the relevant Linear project for the current issue status.
 → Confirm which issue you're working on before starting.
 → Check the `📚 Lessons & Insights` page in Notion — if anything from the previous session warrants a lesson entry that wasn't written yet, write it now before starting new work.
+→ Re-read `.claude/rules/process.md` to confirm MCP and skill requirements for the current issue's domain.
 → Then load the relevant design reference files below.
 
 ---
@@ -40,11 +70,20 @@ This project uses the following by default. Do not introduce alternatives unless
 | Layer | Tool |
 |---|---|
 | Framework | Next.js (App Router) |
-| Styling | Tailwind CSS |
-| Components | shadcn/ui |
+| Styling | Tailwind CSS v4 |
+| Components | shadcn/ui (new-york style) |
 | Icons | Lucide React |
-| Database | Supabase |
 | Deployment | Netlify |
+
+Add-ons configured at project creation (check `components.json` and `package.json` to confirm which are active):
+
+| Add-on | Included if |
+|---|---|
+| Supabase | Selected at project creation |
+| Dark mode (`next-themes`) | Selected at project creation |
+| Sidebar (`shadcn/sidebar`) | Selected at project creation |
+| Charts (`recharts`) | Selected at project creation |
+| Shiki (code display) | Selected at project creation |
 
 ---
 
@@ -56,9 +95,10 @@ This project uses the following by default. Do not introduce alternatives unless
 | **Notion** | Creating/updating the master plan document |
 | **Netlify** | Checking deployment status, environment config |
 | **GitHub** | Repo access, branch/PR status |
-
+| **Supabase** | Database inspection, schema, RLS (if project uses Supabase) |
 
 **Standing rules:**
+- A missing required MCP is a hard stop — see `.claude/rules/process.md` → MCP gates
 - Log material decisions and trade-offs as comments on the relevant Linear issue — not just in conversation
 - If scope changes, update Notion first, then adjust Linear to match
 - Never create Linear issues without a corresponding Notion plan entry for the milestone they belong to
@@ -72,7 +112,7 @@ This project uses the following by default. Do not introduce alternatives unless
 - **Start low-fidelity.** Default to structure and logic first unless explicitly asked for polished UI.
 - **Be direct.** George prefers clear, pressure-free input. Flag concerns honestly.
 - **Use real examples.** Illustrate abstract principles with specific examples relevant to the product.
-- **Decisions need the why.** When logging a decision — in Notion, Linear, or conversation — always state the reasoning alongside the outcome. The *why* is what survives when constraints change and the decision needs revisiting.
+- **Decisions need the why.** When logging a decision — in Notion, Linear, or conversation — always state the reasoning alongside the outcome.
 - **Fast delivery = good planning.** If a milestone ships faster than expected, treat it as evidence that upstream scoping worked — not that the scope was too small.
 
 ---
@@ -83,9 +123,10 @@ This project uses the following by default. Do not introduce alternatives unless
 - UI components: reference the shadcn primitive first, then specify Tailwind classes, colour token, and the design psychology principle behind the decision.
 - Design reviews: **What works → What to question → What to change.**
 - Trade-offs: present them clearly — don't pick one path and hide the alternatives.
-- Issue acceptance criteria: every Linear issue must have a **binary, mechanical done-check** — something a person or script can verify in seconds with a pass/fail result. "It works" is not a criterion. See `project-setup.md` for examples.
-- Milestone completion: before declaring a milestone done, verify that the user-facing surface reflects the milestone's promise end-to-end — not just that the underlying engine was built. "The engine is done" ≠ "every consumer uses the engine."
-- Refactors: before starting any refactor of a user-facing flow, write a regression checklist enumerating what must still work. Put it in the PR description. Run it before merging. See `project-setup.md` Standing engineering disciplines.
+- Issue acceptance criteria: every Linear issue must have a **binary, mechanical done-check**. "It works" is not a criterion. See `project-setup.md` for examples.
+- Milestone completion: before declaring a milestone done, verify that the user-facing surface reflects the milestone's promise end-to-end. "The engine is done" ≠ "every consumer uses the engine."
+- Refactors: before starting any refactor of a user-facing flow, write a regression checklist. Put it in the PR description. Run it before merging.
+- Icon set discipline: before writing the first screen, verify the scaffold uses the icon library chosen in the Brand Identity phase. Mixed icon sets require a multi-file migration to fix.
 
 ---
 
@@ -94,6 +135,9 @@ This project uses the following by default. Do not introduce alternatives unless
 | File | Purpose |
 |---|---|
 | `CLAUDE.md` | This file — master routing, stack, principles |
+| `.claude/rules/code.md` | Non-negotiable code rules — re-read after compact |
+| `.claude/rules/design.md` | Non-negotiable design rules — re-read after compact |
+| `.claude/rules/process.md` | Non-negotiable process rules, MCP/skill tables — re-read after compact |
 | `.claude/project-setup.md` | Startup routine — MCP checks, Notion plan, Linear sync |
 | `.claude/design-psychology.md` | Hick's Law, Gestalt, Fitts's Law, Jakob's Law, Cognitive Load, Colour Psychology |
 | `.claude/ui-standards.md` | shadcn · Tailwind · Lucide — layout, colour tokens, typography, spacing, iconography |

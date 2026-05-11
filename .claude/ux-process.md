@@ -435,6 +435,37 @@ Level 3: Detail pages (Features → Analytics / Reporting / Alerts)
 
 ---
 
+## Onboarding flows
+
+**The principle:** Onboarding is the user's first impression of whether the product is intelligent. Steps that visibly build on each other create momentum; independent data-collection steps feel like a government form.
+
+### Step chaining — each step should visibly use the previous step's output
+
+When onboarding collects data across multiple screens, wire the outputs forward. If step N collects information, step N+1 should show what that information produces — pre-filled recommendations, calculated values, personalised defaults. This demonstrates that the data is already working for the user before they've even finished onboarding.
+
+**The signal a flow is wrong:** A user completes step N and step N+1 asks for more data with no visible connection to what came before. The app feels like a form, not a product.
+
+**The signal a flow is right:** A user completes step N and step N+1 says "Based on what you told us, we recommend X" — and X is pre-filled. The user can override it, but they don't have to. The product has already started working.
+
+### Every data collection field must justify its existence at the point of collection
+
+Every field should tell the user why it's needed — what it unlocks, what it improves, what it enables. A short "Used for: [feature]" indicator next to the question turns a suspicious form into a visible value exchange.
+
+**Why this matters:** Users abandon forms when they don't understand why personal data is being asked for. The explanation reduces abandonment and builds anticipation — the user can see that their data will do something, not just sit in a database.
+
+**Format:**
+```
+Question: "What's your country?"
+Explanation: "Used for: Supplement recommendations"
+
+Question: "Date of birth"
+Explanation: "Used for: Nutrition calculations, Insights"
+```
+
+The explanation doesn't need to be long. One short phrase telling the user which feature uses that data is enough. If you can't explain why a field exists at the point of collection, reconsider whether it belongs in onboarding at all.
+
+---
+
 ## User Testing
 
 **The principle:** Usability testing replaces assumptions with observations. It is the single highest-ROI activity in UX — catching problems before development is orders of magnitude cheaper than fixing them after launch.
