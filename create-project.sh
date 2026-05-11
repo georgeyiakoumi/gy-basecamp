@@ -14,7 +14,7 @@
 
 set -e
 
-TEMPLATE_REPO="georgeyiakoumi/project-template"
+TEMPLATE_REPO="georgeyiakoumi/gy-basecamp"
 DRIVE_NAME="T7 Editing"
 DRIVE_PATH="/Volumes/$DRIVE_NAME"
 PROJECTS_DIR="$DRIVE_PATH/Projects"

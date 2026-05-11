@@ -104,8 +104,8 @@ Download both scripts and store them somewhere permanent. You only need to do th
 
 ```bash
 # 1. Download the scripts
-curl -o ~/Scripts/create-project.sh https://raw.githubusercontent.com/georgeyiakoumi/project-template/main/create-project.sh
-curl -o ~/Scripts/sync-template.sh https://raw.githubusercontent.com/georgeyiakoumi/project-template/main/sync-template.sh
+curl -o ~/Scripts/create-project.sh https://raw.githubusercontent.com/georgeyiakoumi/gy-basecamp/main/create-project.sh
+curl -o ~/Scripts/sync-template.sh https://raw.githubusercontent.com/georgeyiakoumi/gy-basecamp/main/sync-template.sh
 
 # 2. Make them executable
 chmod +x ~/Scripts/create-project.sh ~/Scripts/sync-template.sh

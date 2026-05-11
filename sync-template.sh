@@ -2,7 +2,7 @@
 
 # ─────────────────────────────────────────────────────────────
 # sync-template.sh
-# Pulls the latest shared files from george's project-template
+# Pulls the latest shared files from george's gy-basecamp
 # into the current project directory.
 #
 # Safe to run at any time — only overwrites known template files.
@@ -18,7 +18,7 @@
 
 set -e
 
-TEMPLATE_REPO="georgeyiakoumi/project-template"
+TEMPLATE_REPO="georgeyiakoumi/gy-basecamp"
 BRANCH="main"
 RAW_BASE="https://raw.githubusercontent.com/$TEMPLATE_REPO/$BRANCH"
 
@@ -41,7 +41,7 @@ PROJECT_NAME=$(basename "$(pwd)")
 
 echo ""
 echo -e "${BOLD}╔══════════════════════════════════╗${RESET}"
-echo -e "${BOLD}║     Sync from project-template   ║${RESET}"
+echo -e "${BOLD}║     Sync from gy-basecamp   ║${RESET}"
 echo -e "${BOLD}╚══════════════════════════════════╝${RESET}"
 echo ""
 echo -e "Project:  ${CYAN}$PROJECT_NAME${RESET}"
