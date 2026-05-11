@@ -42,6 +42,9 @@ Running `create-project.sh` scaffolds a new project and opens it in VS Code. Fro
 | Styling | Tailwind CSS v4 |
 | Components | shadcn/ui (new-york style) |
 | Icons | Lucide React |
+| Forms | React Hook Form + Zod |
+| Testing | Vitest + Playwright |
+| CI | GitHub Actions |
 | Deployment | Netlify |
 
 **Add-ons** (selected at project creation):
@@ -53,6 +56,9 @@ Running `create-project.sh` scaffolds a new project and opens it in VS Code. Fro
 | Sidebar | shadcn Sidebar component + CSS variables |
 | Charts | Recharts + shadcn chart wrappers + `--chart-*` tokens |
 | Shiki | Syntax highlighting for code display |
+| Storybook | Component documentation and visual testing |
+| Cloudinary | `next-cloudinary` + `lib/cloudinary.ts` helper + env vars |
+| Cloudflare + ISR | Webhook revalidation route (`/api/revalidate`) + env vars |
 
 ---
 

@@ -268,6 +268,33 @@ else
   USE_SIDEBAR=false
 fi
 
+# ── Storybook ─────────────────────────────────────────────────
+echo ""
+read -p "$(echo -e ${BOLD})Will this project need a component library / Storybook? (y/n): $(echo -e ${RESET})" USE_STORYBOOK
+if [[ "$USE_STORYBOOK" == "y" || "$USE_STORYBOOK" == "Y" ]]; then
+  USE_STORYBOOK=true
+else
+  USE_STORYBOOK=false
+fi
+
+# ── Cloudinary ────────────────────────────────────────────────
+echo ""
+read -p "$(echo -e ${BOLD})Will this project need managed media / image uploads (Cloudinary)? (y/n): $(echo -e ${RESET})" USE_CLOUDINARY
+if [[ "$USE_CLOUDINARY" == "y" || "$USE_CLOUDINARY" == "Y" ]]; then
+  USE_CLOUDINARY=true
+else
+  USE_CLOUDINARY=false
+fi
+
+# ── Cloudflare + ISR webhooks ─────────────────────────────────
+echo ""
+read -p "$(echo -e ${BOLD})Will this project use Cloudflare + ISR webhook revalidation? (y/n): $(echo -e ${RESET})" USE_CLOUDFLARE
+if [[ "$USE_CLOUDFLARE" == "y" || "$USE_CLOUDFLARE" == "Y" ]]; then
+  USE_CLOUDFLARE=true
+else
+  USE_CLOUDFLARE=false
+fi
+
 # ── Dark mode ─────────────────────────────────────────────────
 echo ""
 echo -e "${BOLD}Theme toggling (dark mode) is included by default.${RESET}"
@@ -304,6 +331,15 @@ if [ "$USE_SHIKI" = true ]; then
 fi
 if [ "$USE_SIDEBAR" = true ]; then
   echo -e "  Sidebar:    shadcn Sidebar + CSS variables"
+fi
+if [ "$USE_STORYBOOK" = true ]; then
+  echo -e "  Storybook:  component documentation"
+fi
+if [ "$USE_CLOUDINARY" = true ]; then
+  echo -e "  Cloudinary: media + image management"
+fi
+if [ "$USE_CLOUDFLARE" = true ]; then
+  echo -e "  Cloudflare: ISR webhook revalidation"
 fi
 if [ "$USE_DARK_MODE" = true ]; then
   echo -e "  Dark mode:  next-themes ThemeProvider"
@@ -838,6 +874,94 @@ if [ "$USE_SHIKI" = true ]; then
   echo -e "${GREEN}✓ Shiki installed${RESET}"
 fi
 
+# ── Set up Storybook if enabled ───────────────────────────────
+if [ "$USE_STORYBOOK" = true ]; then
+  echo -e "${BLUE}Setting up Storybook...${RESET}"
+  npx storybook@latest init --yes
+  echo -e "${GREEN}✓ Storybook initialised${RESET}"
+fi
+
+# ── Set up Cloudinary if enabled ──────────────────────────────
+if [ "$USE_CLOUDINARY" = true ]; then
+  echo -e "${BLUE}Installing Cloudinary...${RESET}"
+  npm install next-cloudinary
+
+  # Scaffold a minimal helper
+  mkdir -p lib
+  cat > lib/cloudinary.ts << 'EOF'
+import { v2 as cloudinary } from 'cloudinary'
+
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+})
+
+export default cloudinary
+EOF
+
+  cat >> .env.example << 'EOF'
+
+# ── Cloudinary ────────────────────────────────────────────────
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+EOF
+
+  echo -e "  ${YELLOW}↳ Add Cloudinary keys to .env.local (Settings → API Keys in Cloudinary dashboard)${RESET}"
+  echo -e "${GREEN}✓ Cloudinary scaffolded${RESET}"
+fi
+
+# ── Set up Cloudflare + ISR webhook if enabled ────────────────
+if [ "$USE_CLOUDFLARE" = true ]; then
+  echo -e "${BLUE}Scaffolding Cloudflare ISR webhook revalidation...${RESET}"
+
+  mkdir -p app/api/revalidate
+  cat > app/api/revalidate/route.ts << 'EOF'
+import { revalidatePath, revalidateTag } from 'next/cache'
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function POST(request: NextRequest) {
+  const secret = request.nextUrl.searchParams.get('secret')
+
+  if (secret !== process.env.REVALIDATION_SECRET) {
+    return NextResponse.json({ message: 'Invalid secret' }, { status: 401 })
+  }
+
+  const body = await request.json().catch(() => ({}))
+  const tag = body?.tag as string | undefined
+  const path = body?.path as string | undefined
+
+  if (tag) {
+    revalidateTag(tag)
+    return NextResponse.json({ revalidated: true, tag })
+  }
+
+  if (path) {
+    revalidatePath(path)
+    return NextResponse.json({ revalidated: true, path })
+  }
+
+  return NextResponse.json(
+    { message: 'Provide a tag or path in the request body' },
+    { status: 400 }
+  )
+}
+EOF
+
+  cat >> .env.example << 'EOF'
+
+# ── Cloudflare / ISR revalidation ─────────────────────────────
+# Generate with: openssl rand -base64 32
+REVALIDATION_SECRET=your-revalidation-secret
+EOF
+
+  echo -e "  ${YELLOW}↳ Webhook endpoint: POST /api/revalidate?secret=\$REVALIDATION_SECRET${RESET}"
+  echo -e "  ${YELLOW}↳ Body: { \"tag\": \"posts\" } or { \"path\": \"/blog\" }${RESET}"
+  echo -e "  ${YELLOW}↳ Set up Cloudflare Worker or webhook in your CMS to call this on content publish${RESET}"
+  echo -e "${GREEN}✓ ISR revalidation route scaffolded${RESET}"
+fi
+
 # ── Set up .env.local ─────────────────────────────────────────
 if [ -f ".env.example" ]; then
   cp .env.example .env.local
@@ -885,6 +1009,15 @@ fi
 if [ "$USE_SUPABASE" = true ] && [ "$USE_STRAPI" = false ]; then
   echo -e "  ${BOLD}Supabase:${RESET}  scaffolding included"
 fi
+if [ "$USE_STORYBOOK" = true ]; then
+  echo -e "  ${BOLD}Storybook:${RESET} component docs ready"
+fi
+if [ "$USE_CLOUDINARY" = true ]; then
+  echo -e "  ${BOLD}Cloudinary:${RESET} lib/cloudinary.ts scaffolded"
+fi
+if [ "$USE_CLOUDFLARE" = true ]; then
+  echo -e "  ${BOLD}Cloudflare:${RESET} ISR route at /api/revalidate"
+fi
 echo -e "  ${BOLD}GitHub:${RESET}    https://github.com/georgeyiakoumi/$PROJECT_NAME"
 echo -e "  ${BOLD}Local:${RESET}     $ACTIVE_DIR/$PROJECT_NAME"
 echo ""
@@ -893,6 +1026,13 @@ if [ "$USE_SUPABASE" = true ]; then
 fi
 if [ "$USE_STRAPI" = true ]; then
   echo -e "  ${YELLOW}→ cd strapi && npx create-strapi-app@latest . --quickstart${RESET}"
+fi
+if [ "$USE_CLOUDINARY" = true ]; then
+  echo -e "  ${YELLOW}→ Fill in Cloudinary keys in .env.local${RESET}"
+fi
+if [ "$USE_CLOUDFLARE" = true ]; then
+  echo -e "  ${YELLOW}→ Set REVALIDATION_SECRET in .env.local and Netlify env vars${RESET}"
+  echo -e "  ${YELLOW}→ Wire your CMS webhook to POST /api/revalidate?secret=...${RESET}"
 fi
 echo ""
 echo -e "${CYAN}  Tip: run ${BOLD}sync-template${RESET}${CYAN} from inside this project at any time"
