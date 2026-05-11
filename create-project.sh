@@ -895,3 +895,6 @@ if [ "$USE_STRAPI" = true ]; then
   echo -e "  ${YELLOW}→ cd strapi && npx create-strapi-app@latest . --quickstart${RESET}"
 fi
 echo ""
+echo -e "${CYAN}  Tip: run ${BOLD}sync-template${RESET}${CYAN} from inside this project at any time"
+echo -e "  to pull the latest rules and standards from the template.${RESET}"
+echo ""

@@ -98,6 +98,8 @@ Any time a new package is installed (`npm install [something]`) or a new third-p
 - **Binary acceptance criterion on every issue.** "Done when: `[mechanical check]`." Not "it works" or "it feels complete." A check that a computer or human can run in seconds with pass/fail.
 - **Update the Linear issue status as work progresses.** Not just at the end — in progress when started, done when the criterion passes.
 - **Log material decisions as Linear comments** — not just in conversation. Decisions that aren't logged are decisions that will be re-litigated.
+- **When a solution is found or a decision is made mid-implementation, post a comment to the active Linear issue before moving on.** Do not wait until the end of the session. The comment should state what was decided and why — one sentence minimum.
+- **After a git push, update the active Linear issue.** At minimum: confirm the issue is still the right status. If the push completed a task, mark it done and add a comment linking what was shipped. If Notion scope changed as a result, update the master plan first.
 
 ---
 

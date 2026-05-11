@@ -94,17 +94,19 @@ MCP connections (Linear, Notion, Netlify, GitHub, Supabase) are configured at th
 
 ## Creating a new project
 
-Download `create-project.sh` from this repo and store it somewhere permanent (e.g. `~/Scripts/create-project.sh`). You only need to do this once.
+Download both scripts and store them somewhere permanent. You only need to do this once.
 
 ```bash
-# 1. Download the script
+# 1. Download the scripts
 curl -o ~/Scripts/create-project.sh https://raw.githubusercontent.com/georgeyiakoumi/project-template/main/create-project.sh
+curl -o ~/Scripts/sync-template.sh https://raw.githubusercontent.com/georgeyiakoumi/project-template/main/sync-template.sh
 
-# 2. Make it executable
-chmod +x ~/Scripts/create-project.sh
+# 2. Make them executable
+chmod +x ~/Scripts/create-project.sh ~/Scripts/sync-template.sh
 
-# 3. Optionally add an alias to your shell profile (~/.zshrc or ~/.bashrc)
+# 3. Add aliases to your shell profile (~/.zshrc or ~/.bashrc)
 echo 'alias new-project="~/Scripts/create-project.sh"' >> ~/.zshrc
+echo 'alias sync-template="bash ~/Scripts/sync-template.sh"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
@@ -119,6 +121,22 @@ The script will ask for:
 - Add-ons: Supabase, dark mode, sidebar, charts, Shiki
 
 Then it creates the GitHub repo, clones it, configures the scaffold, runs `npm install`, and opens VS Code. From there, Claude Code handles everything else.
+
+## Syncing an existing project
+
+When the template is updated (new rules, improved standards, bug fixes), pull the changes into any existing project:
+
+```bash
+cd /path/to/your-project
+sync-template
+```
+
+This updates only the shared Claude assistant files — `.claude/rules/`, `.claude/project-setup.md`, `.claude/ui-standards.md`, `e2e/smoke.spec.ts`, etc. It never touches `CLAUDE.md`, `README.md`, `.env.local`, or any project code.
+
+```bash
+# Preview what would change without writing anything
+sync-template --dry-run
+```
 
 ---
 
