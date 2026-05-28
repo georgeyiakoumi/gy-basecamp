@@ -93,6 +93,103 @@ Any time a new package is installed (`npm install [something]`) or a new third-p
 
 ---
 
+## Lessons & Insights — read before acting
+
+**This is not a post-session ritual. It is a pre-action requirement.**
+
+Before responding to any prompt that involves design, code, or process decisions:
+1. Fetch the `📚 Lessons & Insights` page from Notion and read every lesson entry.
+2. Also read `.claude/memory/lessons.md` as a local fallback (useful if Notion MCP is unreachable).
+3. Do not act until both have been checked.
+
+If a lesson is directly relevant to the current task, state it explicitly before proceeding:
+> "Lesson [N] applies here — [one sentence summary]. Adjusting approach accordingly."
+
+Lessons that are never read are a diary. Lessons that are read before acting are a system. The entire value of recording them depends on this step.
+
+**When a new lesson is written to Notion**, also add a summary line to `.claude/memory/lessons.md` immediately — do not wait until the end of the session. Format:
+```
+- [N]. [Date] — [Headline] → [one-sentence generalisation]
+```
+
+---
+
+## Never guess — always check documentation
+
+When in doubt about how a library, API, framework feature, or tool works:
+- **Do not guess.** Do not rely on training knowledge for anything version-specific or API-specific.
+- Check the documentation. Use the relevant MCP if one exists (e.g. Supabase MCP for schema questions). Use the relevant skill if one is available. WebSearch if neither applies.
+- State explicitly when you are working from documentation vs training knowledge: *"This is from the Next.js 15 docs"* vs *"I believe this is how it works — let me verify."*
+- If you cannot verify and the stakes are meaningful, say so and ask George before proceeding.
+
+Guessing and being wrong costs more time than checking. Never present training knowledge as documentation.
+
+---
+
+## Git workflow — non-negotiable
+
+### Every piece of work lives on a branch
+
+- **Never work on `main`.** No commits, no edits, no exceptions.
+- Every branch must be derived from a Linear ticket. Branch naming format: `geo-[ticket-number]-[short-slug]` — e.g. `geo-42-add-export-flow`.
+- If no Linear ticket exists for the work, create one before creating the branch.
+
+### Before committing or pushing — always ask George first
+
+- **Never commit or push without George's explicit approval.** He will want to test first.
+- When work is ready, say exactly: *"Ready for your review — let me know when you've tested and I'll commit and push."*
+- Do not interpret silence or "looks good" in conversation as approval to push. Wait for an explicit "go ahead" or equivalent.
+- This applies to every commit — not just the first one on a branch.
+
+### Commit message format
+
+Every commit message must reference the Linear ticket ID:
+```
+geo-[N]: [Short description of what changed]
+```
+Example: `geo-42: Add CSV export button to report page`
+
+Linear auto-links these. It also makes `git log` readable without opening a browser.
+
+### Proposing to bundle work on the same ticket
+
+If Claude thinks a small tweak or fix logically belongs on the current open branch and ticket (rather than opening a new one), propose it explicitly before doing it:
+> "This fix is small and directly related to geo-[N]. Want me to include it on this branch rather than open a new ticket?"
+
+Wait for George's answer. Never silently bundle unrelated work onto an open branch.
+
+### After every commit — update the Linear ticket
+
+After each commit, post a comment on the active Linear issue. Minimum content:
+- What was committed (one sentence)
+- What still remains on this branch, if anything
+
+Do not batch these up. Comment at commit time, not at PR time.
+
+### PR discipline
+
+Before raising a PR:
+1. Run `npm run typecheck` — must pass with zero errors
+2. Run `npm run build` — must exit 0 with no new warnings
+3. Fix anything that fails before raising the PR. Do not raise a PR against a broken build.
+
+PR description must include:
+- **What changed** — 2–4 sentences, plain English
+- **Why** — the user need or bug this addresses
+- **Linear ticket link**
+- **Regression checklist** (if the PR touches a user-facing flow — see Standing engineering disciplines)
+
+### After a PR merges
+
+1. Switch to `main` and pull latest: `git checkout main && git pull`
+2. Delete the remote branch: `git push origin --delete geo-[N]-[slug]`
+3. Update the Linear ticket to Done and add a comment confirming the merge
+4. Then — and only then — create the next branch for the next issue
+
+Do not start the next branch from a stale `main`. Always pull before branching.
+
+---
+
 ## Issue lifecycle
 
 - **Binary acceptance criterion on every issue.** "Done when: `[mechanical check]`." Not "it works" or "it feels complete." A check that a computer or human can run in seconds with pass/fail.

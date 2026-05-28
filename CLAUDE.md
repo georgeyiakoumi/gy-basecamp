@@ -29,7 +29,8 @@ If the conversation has been compacted, do this before continuing:
 4. Re-read `.claude/rules/process.md`
 5. Re-read the Discovery Summary in Notion — fetch the project master plan and reload the problem statement, target user, differentiation thesis, and open questions
 6. Check the current Linear issue — confirm which is in progress, re-read its acceptance criterion
-7. Check `📚 Lessons & Insights` in Notion — write any unwritten lessons from the compacted session
+7. **Fetch and read `📚 Lessons & Insights` from Notion** — read every lesson before continuing. Also read `.claude/memory/lessons.md` as a local backup. Do not act on anything until lessons are loaded and internalised.
+8. Write any unwritten lessons from the compacted session before starting new work.
 
 Do not assume rules survived compaction. Re-read the files. It takes 2 minutes.
 
@@ -45,9 +46,10 @@ This covers: MCP connectivity check → skills scan → project scoping → Noti
 Do not proceed to design or code until this routine is complete.
 
 ### Continuing work on an already-scoped project?
+→ **Before anything else: fetch `📚 Lessons & Insights` from Notion and read every lesson.** Also read `.claude/memory/lessons.md`. Do not skip this. Lessons exist to prevent repeating the same mistakes — they only work if they are read before acting, not after.
 → Check the relevant Linear project for the current issue status.
 → Confirm which issue you're working on before starting.
-→ Check the `📚 Lessons & Insights` page in Notion — if anything from the previous session warrants a lesson entry that wasn't written yet, write it now before starting new work.
+→ If anything from the previous session warrants a lesson entry that wasn't written yet, write it now before starting new work.
 → Re-read `.claude/rules/process.md` to confirm MCP and skill requirements for the current issue's domain.
 → Then load the relevant design reference files below.
 
@@ -144,3 +146,4 @@ Add-ons configured at project creation (check `components.json` and `package.jso
 | `.claude/design-psychology.md` | Hick's Law, Gestalt, Fitts's Law, Jakob's Law, Cognitive Load, Colour Psychology |
 | `.claude/ui-standards.md` | shadcn · Tailwind · Lucide — layout, colour tokens, typography, spacing, iconography |
 | `.claude/ux-process.md` | Research, strategy, personas, user stories, IA, user flows, user testing |
+| `.claude/memory/lessons.md` | Local backup of Notion Lessons & Insights — read before every session and every action |
