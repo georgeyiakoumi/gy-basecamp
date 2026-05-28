@@ -1,4 +1,4 @@
-# Project Template
+# gy-basecamp
 
 A personal project starter for George Yiakoumi — combining a production-ready Next.js scaffold with a Claude Code assistant trained for UX/product design work.
 
@@ -12,11 +12,14 @@ Running `create-project.sh` scaffolds a new project and opens it in VS Code. Fro
 
 1. **Checks every required MCP** — Linear, Notion, GitHub, Netlify, Supabase (if included). Missing MCPs are a hard stop, not a warning. Claude won't proceed without the tools it needs.
 2. **Scans for relevant skills** — identifies and invokes the right skills for the project stack before any work begins. No falling back to stale training knowledge.
-3. **Scopes the project** — asks the right questions to establish what's being built, who it's for, and what success looks like.
-4. **Creates a Notion master plan** — goals, users, scope, constraints, milestones, decisions log, open questions. The single source of truth.
-5. **Creates a Linear project + issues** — one issue per discrete task, with binary acceptance criteria. "It works" is not a criterion.
-6. **Follows the UX process** — research and strategy first, brand identity before any UI, shadcn components last. The process is enforced, not optional.
-7. **Enforces non-negotiable rules throughout** — a dedicated rules system (`rules/code.md`, `rules/design.md`, `rules/process.md`) that Claude re-reads after every `/compact` and before every milestone sign-off.
+3. **Asks for prior context** — if you have brainstorm notes, a handover doc, or a rough spec from a previous session, Claude asks for it before scaffolding anything. That context informs the Notion plan from the start.
+4. **Reads lessons before acting** — before responding to any design, code, or process prompt, Claude fetches the project's Lessons & Insights from Notion and reads them. Lessons are a feedback loop, not a diary.
+5. **Scopes the project** — asks the right questions to establish what's being built, who it's for, and what success looks like.
+6. **Creates a Notion master plan** — goals, users, scope, constraints, milestones, decisions log, open questions. The single source of truth.
+7. **Creates a Linear project + issues** — one issue per discrete task, with binary acceptance criteria. "It works" is not a criterion.
+8. **Follows the UX process** — research and strategy first, brand identity before any UI, shadcn components last. The process is enforced, not optional.
+9. **Enforces git discipline throughout** — every piece of work lives on a branch derived from a Linear ticket. Claude never commits or pushes without your explicit approval. PRs must pass typecheck and build before being raised.
+10. **Enforces non-negotiable rules throughout** — a dedicated rules system (`rules/code.md`, `rules/design.md`, `rules/process.md`) that Claude re-reads after every `/compact` and before every milestone sign-off.
 
 ---
 
@@ -71,11 +74,13 @@ Claude Code reads `CLAUDE.md` automatically on every session open. The assistant
 | `CLAUDE.md` | Master routing, stack, post-compact re-orientation trigger |
 | `.claude/rules/code.md` | Non-negotiable code rules — stack, Tailwind, TypeScript, security |
 | `.claude/rules/design.md` | Non-negotiable design rules — colour, typography, dark mode, accessibility |
-| `.claude/rules/process.md` | Non-negotiable process rules — MCP gates, skill tables, milestone discipline |
-| `.claude/project-setup.md` | Full startup routine — MCP checks → scoping → Notion → Linear |
+| `.claude/rules/process.md` | Non-negotiable process rules — MCP gates, git workflow, skill tables, milestone discipline |
+| `.claude/project-setup.md` | Full startup routine — MCP checks → prior context intake → discovery → Notion → Linear |
+| `.claude/discovery.md` | Pre-build discovery process — problem framing, assumptions, competitive research |
 | `.claude/ui-standards.md` | shadcn · Tailwind · Lucide standards, dark mode setup, forms, loading states |
 | `.claude/ux-process.md` | Research, strategy, personas, brand identity, user flows, onboarding |
 | `.claude/design-psychology.md` | Hick's Law, Gestalt, Fitts's Law, Jakob's Law, Cognitive Load, Colour Psychology |
+| `.claude/memory/lessons.md` | Local backup of Notion Lessons & Insights — read before every session |
 
 **The rules files** are the key addition. They're short by design — fast to re-read after `/compact`. They contain only hard constraints: things that, if violated, cause real problems. The detailed reference files (`ui-standards.md`, `ux-process.md`, etc.) are consulted during work. The rules files are enforced throughout.
 
@@ -198,8 +203,11 @@ Do this once, at the end of the Brand Identity phase, before any components are 
 │   ├── rules/
 │   │   ├── code.md              ← Non-negotiable code rules (re-read after /compact)
 │   │   ├── design.md            ← Non-negotiable design rules (re-read after /compact)
-│   │   └── process.md           ← Non-negotiable process rules + MCP/skill tables
-│   ├── project-setup.md         ← Startup routine: MCP checks → Notion → Linear
+│   │   └── process.md           ← Non-negotiable process rules + MCP/skill/git tables
+│   ├── memory/
+│   │   └── lessons.md           ← Local backup of Notion Lessons & Insights
+│   ├── project-setup.md         ← Startup routine: MCP checks → context intake → Notion → Linear
+│   ├── discovery.md             ← Pre-build discovery: problem framing, assumptions, research
 │   ├── design-psychology.md     ← Hick's Law, Gestalt, Fitts's, Jakob's, Cognitive Load
 │   ├── ui-standards.md          ← shadcn · Tailwind · Lucide standards
 │   └── ux-process.md            ← Research, personas, brand identity, flows, testing
@@ -210,10 +218,7 @@ Do this once, at the end of the Brand Identity phase, before any components are 
 ├── components/
 │   └── ui/                      ← shadcn components (via npx shadcn add)
 ├── lib/
-│   ├── utils.ts                 ← cn() helper
-│   └── supabase/                ← Present only if Supabase was included
-│       ├── client.ts
-│       └── server.ts
+│   └── utils.ts                 ← cn() helper
 ├── e2e/                         ← Playwright E2E tests (set up in Phase 1b)
 │   └── smoke.spec.ts
 ├── public/
