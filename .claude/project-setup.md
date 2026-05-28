@@ -188,6 +188,46 @@ Service MCPs (beyond required set)
 
 ---
 
+## Phase 1d — Prior context intake
+
+Before running discovery, check whether George has prior context on this project idea — notes from a brainstorming session, a competitor teardown, a rough spec, user interview notes, or a handover document from a previous conversation.
+
+Ask exactly this:
+
+> "Do you have any prior context on this project — brainstorming notes, a handover doc, a rough spec, or anything else worth sharing before we begin? If yes, paste it here now and I'll factor it in before we scaffold the plan."
+
+**If George says no:** proceed directly to Phase 2.
+
+**If George says yes — do the following before proceeding:**
+
+1. Ask what type of context it is, if not already clear:
+   - **Brainstorm notes** — loosely held ideas; use to inform but don't over-commit to specifics
+   - **Competitor teardown / market research** — high value; use to shape the differentiation thesis
+   - **Rough spec or feature list** — treat as a starting point, not a contract; validate against discovery
+   - **User interview or research notes** — high signal; treat as observed evidence, not assumption
+   - **Handover doc from a previous Claude session** — treat as a peer summary; high confidence but verify key decisions
+
+2. Once pasted, read it fully. Then produce a structured summary before moving on:
+
+```
+Prior context summary
+─────────────────────
+Type:              [brainstorm / spec / research / handover / other]
+Key themes:        [2–4 bullet points — the strongest signals]
+Assumptions it contains: [things stated as fact that still need validating]
+Tensions with defaults:  [anything that conflicts with the standard discovery approach or stack defaults]
+How it will influence the plan: [specific sections of the Notion master plan or Linear issues it affects]
+```
+
+3. **Flag any conflicts explicitly.** If the prior context contradicts something that would normally be decided in discovery (e.g. a strong persona assumption, a technology choice, a scope decision), name the tension:
+   > "Your notes assume X, but I'd normally validate that in discovery. Do you want to carry it forward as a confirmed decision, or keep it as an assumption to test?"
+
+4. Carry the summary forward into Phase 2. The discovery process should build on this context — not repeat it. Skip or abbreviate discovery steps that the prior context has already answered with sufficient confidence.
+
+> **Why this matters:** Prior context from a brainstorm session often contains the sharpest problem framing and the clearest differentiation thinking — work that would otherwise get reconstructed from scratch in discovery. Capturing it before scaffolding ensures it shapes the Notion master plan from the start, not as a retrofit.
+
+---
+
 ## Phase 2 — Discovery
 
 **This phase is mandatory before scoping, design, or any code work. It is not optional and cannot be skipped or abbreviated.**
