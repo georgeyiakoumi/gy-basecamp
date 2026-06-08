@@ -1046,3 +1046,19 @@ echo ""
 echo -e "${CYAN}  Tip: run ${BOLD}sync-template${RESET}${CYAN} from inside this project at any time"
 echo -e "  to pull the latest rules and standards from the template.${RESET}"
 echo ""
+echo -e "${YELLOW}${BOLD}  Before starting work — verify MCPs are connected:${RESET}"
+echo -e "${YELLOW}  Claude Code → Settings → MCP Servers${RESET}"
+echo ""
+echo -e "  ${BOLD}☐ Linear${RESET}   — required for all projects"
+echo -e "  ${BOLD}☐ Notion${RESET}   — required for all projects"
+echo -e "  ${BOLD}☐ GitHub${RESET}   — required for all projects"
+if [ "$USE_NETLIFY" = true ]; then
+  echo -e "  ${BOLD}☐ Netlify${RESET}  — required (Netlify deployment selected)"
+fi
+if [ "$USE_SUPABASE" = true ]; then
+  echo -e "  ${BOLD}☐ Supabase${RESET} — required (Supabase selected)"
+fi
+echo ""
+echo -e "  ${CYAN}Then run Phase 1 in project-setup.md to confirm connectivity${RESET}"
+echo -e "  ${CYAN}before any design or code work begins.${RESET}"
+echo ""
