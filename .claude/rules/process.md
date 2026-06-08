@@ -200,6 +200,32 @@ Do not start the next branch from a stale `main`. Always pull before branching.
 
 ---
 
+## Notion documentation protocol — 4-field format
+
+Every significant project event must be documented in Notion using the four-field format below. This is not optional — it is the raw material for case studies, retrospectives, and future projects. Skipping it means the project leaves no institutional memory.
+
+**The four fields — never skip one:**
+
+1. **What changed** — the decision or work done. 1–2 sentences.
+2. **Why** — the reasoning. What problem or constraint was this answering?
+3. **What I almost did instead** — rejected alternatives, even small ones. This is the most valuable field — it explains the reasoning rather than just the outcome.
+4. **What surprised me** — pushback, unexpected outcomes, assumptions that turned out wrong.
+
+Tag every entry: `#strategic`, `#craft`, or `#reflection`.
+
+**When to write a 4-field entry:**
+
+| Trigger | Where to document |
+|---|---|
+| A significant mid-implementation decision | Notion decisions log + Linear issue comment |
+| An issue is merged to main | Notion decisions log (one entry per issue, written at merge time) |
+| A milestone is completed | Notion decisions log (one milestone-level entry summarising the milestone) |
+| A lesson is written | Notion `📚 Lessons & Insights` child page |
+
+**The case study principle:** Every project should be documentable as a fruitful case study when it ends. That only works if the documentation happens continuously — not reconstructed from memory at the end. The 4-field format is designed so each entry can stand alone: read by someone with no project context, the *why* and *what I almost did instead* fields carry the story.
+
+---
+
 ## Milestone completion — never declare done early
 
 Before marking any milestone complete:
@@ -209,6 +235,40 @@ Before marking any milestone complete:
 4. Ask: does the codebase still contain two vocabularies, two data models, or two UI surfaces where the milestone promised one?
 
 If any answer is yes — the milestone is not done. "The engine works" is not "every consumer uses the engine."
+
+---
+
+## Notion drift audit — mandatory at key checkpoints
+
+Notion is the source of truth. If the codebase, Linear, or a conversation has moved ahead of Notion, Notion is wrong — and wrong documentation is worse than no documentation because it actively misleads.
+
+**When to run the audit (non-negotiable):**
+- Before marking any milestone complete
+- After any `/compact` re-orientation
+- When starting a new session on a project that's been running for more than one session
+- Whenever a significant pivot or scope change occurs mid-implementation
+- Before raising a PR
+
+**What to check — go through each section of the Notion master plan:**
+
+| Section | What to verify |
+|---|---|
+| Overview | Still accurate? Scope hasn't silently grown or shrunk? |
+| Discovery Summary | Problem statement, target user, differentiation thesis — still what the project is building toward? |
+| Goals | Primary and secondary goals still reflect what's actually being built? |
+| Scope (in / out) | Anything that was "out of scope" that snuck in? Anything in scope that was quietly dropped? |
+| Constraints | Any new constraints surfaced during build? Any old ones that no longer apply? |
+| Milestones | Do the milestone descriptions match what was actually shipped? Completion dates accurate? |
+| Decisions log | Is every significant implementation decision logged? Any gaps since the last audit? |
+| Open questions | Have any open questions been answered? Are new ones unresolved? |
+
+**How to run it:**
+1. Fetch the Notion master plan page.
+2. Compare each section against: the current codebase state, the Linear issue history, and the conversation context.
+3. For every discrepancy found, update Notion immediately — do not continue work until Notion reflects reality.
+4. State the result explicitly: *"Notion audit complete — N discrepancies found and updated."* or *"Notion audit complete — no drift detected."*
+
+**The drift principle:** A Notion page that hasn't been updated in 3+ sessions is almost certainly stale. The longer drift goes unaddressed, the harder it is to reconstruct what was actually decided and why. An out-of-date decisions log is the most common reason the same question gets debated twice.
 
 ---
 
@@ -235,8 +295,9 @@ If the conversation has been compacted (context window was compressed), do the f
 3. **Re-read `.claude/rules/design.md`** — re-load non-negotiable design constraints including the honesty and self-evaluation rules.
 4. **Re-read this file (`.claude/rules/process.md`)** — re-load process rules and MCP/skill tables.
 5. **Re-read the Discovery Summary in Notion** — fetch the project's master plan page and re-read the Discovery Summary section. Every design and build decision must be informed by the validated problem statement, target user, differentiation thesis, and open questions. Do not design or build anything without this context.
-6. **Check the current Linear issue** — confirm which issue is in progress and re-read its acceptance criterion.
-7. **Check the Lessons & Insights page** — if anything from the compacted session warrants a lesson that wasn't written, write it now.
+6. **Run the Notion drift audit** — fetch the full master plan and compare every section against the current codebase and Linear state. Update any stale sections before continuing. See "Notion drift audit" section above for the full checklist.
+7. **Check the current Linear issue** — confirm which issue is in progress and re-read its acceptance criterion.
+8. **Check the Lessons & Insights page** — if anything from the compacted session warrants a lesson that wasn't written, write it now.
 
 Do not assume that rules from the previous session context survived compaction intact. Re-read the files. This takes 2 minutes and prevents hours of drift.
 
