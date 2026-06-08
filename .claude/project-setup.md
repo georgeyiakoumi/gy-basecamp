@@ -314,13 +314,18 @@ Pull directly from the Discovery session output:
 
 ## Decisions log
 Capture every significant directional decision here on the day it's made — before any code is written.
-Each entry must include the *why*, not just the *what*. The why is what you'll need when constraints change and you have to revisit.
+Each entry uses the 4-field format (see `rules/process.md` → Notion documentation protocol). Never skip a field.
 
-| Date | Decision | Why | Alternatives rejected |
-|---|---|---|---|
-| YYYY-MM-DD | [What was decided] | [The reasoning] | [What else was considered and why it was ruled out] |
+```
+Date: YYYY-MM-DD  Tag: #strategic | #craft | #reflection
 
-> A decisions log pays for itself many times over. The cost is ten minutes of writing per decision; the value is never re-litigating the same question three weeks later when you're tired and the answer feels arbitrary.
+1. What changed: [The decision or work done — 1–2 sentences]
+2. Why: [The reasoning — what problem or constraint was this answering]
+3. What I almost did instead: [Rejected alternatives, even small ones — most valuable field]
+4. What surprised me: [Pushback, unexpected outcomes, assumptions that turned out wrong]
+```
+
+> A decisions log pays for itself many times over. The cost is ten minutes of writing per decision; the value is never re-litigating the same question three weeks later when you're tired and the answer feels arbitrary. The 4-field format also generates the raw material for a case study — written continuously, not reconstructed at the end.
 
 ## Open questions
 - Questions that need answers before specific tasks can be completed
@@ -462,6 +467,20 @@ Write this once scoping is complete (after Phase 2) and keep it up to date as th
 - Log decisions and trade-offs as comments on the Linear issue — not just in conversation
 - If scope changes materially, update the Notion document first, then adjust Linear issues to match
 
+### On every issue merge to main — mandatory documentation step
+
+When an issue branch is merged to `main`, before creating the next branch:
+
+1. **Write a 4-field Notion entry** in the Decisions log for that issue:
+   - What changed (what this issue shipped)
+   - Why (the user need or problem it answered)
+   - What I almost did instead (alternatives considered during implementation)
+   - What surprised me (anything unexpected during build or review)
+2. **Post a summary comment on the Linear issue** confirming the merge and linking the Notion entry if written.
+3. **If this merge completes a milestone**, also write a milestone-level 4-field entry summarising what the milestone delivered as a whole — one entry that spans all the issues in the milestone.
+
+> **Why this discipline matters:** The goal is to be able to write a full case study for every project without reconstructing anything from memory. That only works if documentation happens at merge time, when context is fresh. An issue merged without a 4-field entry is context that's gone forever.
+
 ### New service or package added mid-project — mandatory check
 
 Any time a new package is installed (`npm install [x]`) or a new third-party service is introduced **after the initial setup phase**, pause and run this check before writing any implementation code:
@@ -495,7 +514,8 @@ Run this phase when the final milestone is shipped and the product is in a stabl
 **2. Notion**
 - Update the master plan's milestone table to reflect completion dates
 - Add a "Status: Shipped" note to the Overview section
-- Confirm the Decisions Log is up to date
+- Confirm the Decisions Log is up to date — every milestone should have a 4-field entry; any gaps must be filled now before the project is considered closed
+- Review the log: the entries should collectively tell the story of the project in enough detail for a case study. If they don't, write the missing entries before moving on.
 
 **3. Deployment**
 - Confirm the production build is green (`next build` passes)
