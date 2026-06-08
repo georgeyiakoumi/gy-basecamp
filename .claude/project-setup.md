@@ -186,6 +186,19 @@ Service MCPs (beyond required set)
 ⚠️ [Service]    — No official MCP found — proceeding with skill/training knowledge
 ```
 
+**Skills invoked this session** (required — output this block at the end of Phase 1c):
+```
+Skills invoked this session
+────────────────────────────
+✅ shadcn                           — invoked
+✅ next-best-practices              — invoked
+✅ claude-api                       — invoked (AI integration in stack)
+⏭️ supabase-postgres-best-practices — skipped (no Supabase in this project)
+⏭️ copywriting                      — skipped (not a marketing site)
+```
+
+This block must appear in the session transcript before any domain work begins. George can verify at a glance that the right skills were loaded. Omitting this block means Phase 1c is not complete.
+
 ---
 
 ## Phase 1d — Prior context intake
