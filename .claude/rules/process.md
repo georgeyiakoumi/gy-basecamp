@@ -170,8 +170,11 @@ Do not batch these up. Comment at commit time, not at PR time.
 
 Before raising a PR:
 1. Run `npm run typecheck` — must pass with zero errors
-2. Run `npm run build` — must exit 0 with no new warnings
-3. Fix anything that fails before raising the PR. Do not raise a PR against a broken build.
+2. Run `npm run lint` — must pass with zero errors (catches JSX/ESLint issues `build` does not)
+3. Run `npm run build` — must exit 0 with no new warnings
+4. Fix anything that fails before raising the PR. Do not raise a PR against a broken build.
+
+**Create the PR yourself using `gh pr create`.** Never output the description and ask George to paste it. Never push without also creating the PR. The PR description is your responsibility — draft it, then run `gh pr create` with it in the same step. Do not raise a PR without a description.
 
 PR description must include:
 - **What changed** — 2–4 sentences, plain English
@@ -204,6 +207,8 @@ Do not start the next branch from a stale `main`. Always pull before branching.
 
 Every significant project event must be documented in Notion using the four-field format below. This is not optional — it is the raw material for case studies, retrospectives, and future projects. Skipping it means the project leaves no institutional memory.
 
+**Date format: DD/MM/YYYY** (George is UK-based). Never use MM/DD/YYYY or YYYY-MM-DD in Notion entries.
+
 **The four fields — never skip one:**
 
 1. **What changed** — the decision or work done. 1–2 sentences.
@@ -222,7 +227,12 @@ Tag every entry: `#strategic`, `#craft`, or `#reflection`.
 | A milestone is completed | Notion decisions log (one milestone-level entry summarising the milestone) |
 | A lesson is written | Notion `📚 Lessons & Insights` child page |
 
+**Decisions log structure:** The decisions log lives as a dedicated child page (📋 Decisions Log) under the project master plan. Each entry is its own sub-page under that child page. Entries are in chronological order (oldest first). Never append entries inline to the parent page — the parent is an index only.
+
 **The case study principle:** Every project should be documentable as a fruitful case study when it ends. That only works if the documentation happens continuously — not reconstructed from memory at the end. The 4-field format is designed so each entry can stand alone: read by someone with no project context, the *why* and *what I almost did instead* fields carry the story.
+
+**On every issue merge to main:**
+Before creating the next branch, write a 4-field Notion entry for the issue just merged. If the merge completes a milestone, also write a milestone-level 4-field entry summarising the milestone as a whole.
 
 ---
 

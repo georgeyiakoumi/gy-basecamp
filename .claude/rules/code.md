@@ -47,6 +47,16 @@ These rules are not guidance. They are hard constraints that apply on every proj
 
 ---
 
+## Client-side state store hygiene
+
+When using localStorage (or any equivalent client-side key-value store) as a state store:
+
+- **Every key must be registered in all clear points simultaneously.** Identify every place in the codebase where state is reset (e.g. "start new", "approve and continue", "sign out") and add the new key to all of them in the same commit.
+- **Never add a key without auditing the clear lists.** Before shipping any new localStorage key, search the codebase for every `localStorage.removeItem` block and confirm the new key is present in each one.
+- **The symptom of missing a clear point** is stale state appearing on a fresh run — milestones pre-completed, old data surfacing after a reset. This is always a missing key in one of the clear lists, not a timing issue.
+
+---
+
 ## Git hygiene
 
 - **Fix the actual bug — don't rebuild from scratch.** When something worked before and doesn't now, use `git show` / `git checkout` to restore and isolate before rewriting anything.
