@@ -6,6 +6,18 @@ This checklist is Part 2 of the testing strategy. Part 1 (the scaffold itself) i
 
 ---
 
+## Phase 0 — Project configuration
+
+- [ ] Claude asked for the component system choice before running any install command
+- [ ] Component system choice is recorded in `CONTEXT.md` (Stack decisions section)
+- [ ] Icon set was confirmed — recorded in the Phase 0 output block and `CONTEXT.md`
+- [ ] Animation system was confirmed — recorded in `CONTEXT.md` before any animation was written
+- [ ] Storybook opt-in was asked (if applicable) — Vite builder sub-question shown if Storybook selected
+- [ ] Phase 0 expected output block was printed and confirmed before Phase 1 started
+- [ ] If Astryx was selected: bail-out instructions were shown and script exited cleanly
+
+---
+
 ## Phase 1 — MCP connectivity
 
 - [ ] Claude checked all required MCPs without being prompted

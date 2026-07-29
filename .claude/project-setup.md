@@ -5,6 +5,110 @@ Work through each phase in order. Do not skip ahead to design or code until phas
 
 ---
 
+## Phase 0 — Project configuration
+
+Before running any checks or install commands, confirm the following with George. These decisions affect the scaffold commands and stack — they cannot be changed cheaply after components are added.
+
+Ask the questions below in order. Do not proceed to Phase 1 until all are answered and the expected output is written.
+
+---
+
+**Q1 — Component system**
+
+> "Which component system do you want for this project?"
+
+| Option | Styling | Status | Notes |
+|---|---|---|---|
+| **shadcn/ui — Base UI** | Tailwind v4 | Stable (default since July 2026) | Recommended for new projects |
+| **shadcn/ui — Radix UI** | Tailwind v4 | Stable | If you have a preference or existing Radix work |
+| **shadcn/ui — React Aria** | Tailwind v4 | Stable | Adobe accessibility primitives |
+| **Astryx (Meta)** | StyleX (pre-compiled CSS) | Public beta | 150+ components, agent-ready CLI, 10 built-in themes. Not Tailwind-compatible — requires different stack. See note below. |
+
+**If shadcn is selected**, the scaffold command will be one of:
+```bash
+npx shadcn@latest init              # Base UI (default)
+npx shadcn@latest init --base radix # Radix UI
+npx shadcn@latest init --base aria  # React Aria
+```
+
+**If Astryx is selected**, note the following stack differences before proceeding:
+- Tailwind is **not used** — Astryx ships pre-compiled CSS via StyleX
+- Remove Tailwind from the stack; the `globals.css` Tailwind pipeline does not apply
+- Install: `npm install @astryxdesign/core @astryxdesign/theme-neutral` + `npm install -D @astryxdesign/cli`
+- CSS imports replace `globals.css` Tailwind directives:
+  ```css
+  @import '@astryxdesign/core/reset.css';
+  @import '@astryxdesign/core/astryx.css';
+  @import '@astryxdesign/theme-neutral/theme.css';
+  ```
+- Theming is done via CSS custom property token files, not shadcn's `@theme` block
+- The `shadcn` skill does **not** apply — use the Astryx CLI and docs directly
+- Astryx is public beta — WebSearch for the latest install instructions before running anything; do not rely on training knowledge
+- An MCP server for Astryx has been referenced in press coverage but is not yet in the official docs — check `astryx.atmeta.com` at project start for current status
+
+---
+
+**Q2 — Storybook**
+
+> "Do you want Storybook on this project? It's most valuable for component-heavy projects and design systems — less so for simple apps."
+
+If yes:
+
+> "Do you want the Storybook MCP server? It lets AI agents read your components, stories, and run tests — but it requires the Vite builder. Next.js defaults to Webpack, so this is an explicit opt-in."
+
+Notes:
+- Latest stable: **10.5** — install with `npm create storybook@latest`
+- If Vite builder + MCP is confirmed: select **Vite** at the builder prompt during init — do not accept the Webpack default
+- MCP setup docs: `storybook.js.org/docs/ai/setup` — WebSearch for current steps at project start; do not rely on training knowledge
+- Storybook is installed in Phase 1b, after the core stack is verified
+
+---
+
+**Q3 — Icon set**
+
+> "Which icon library will this project use? The default is Lucide React (already in the scaffold). Choosing a different library here means swapping it before the first screen — doing it later requires a multi-file migration."
+
+| Option | Package | Notes |
+|---|---|---|
+| **Lucide React** | `lucide-react` | Default — already installed in scaffold |
+| **Phosphor Icons** | `@phosphor-icons/react` | More expressive, variable weight |
+| **Heroicons** | `@heroicons/react` | Tailwind Labs, clean and minimal |
+| **Other** | — | Note which one and confirm before starting |
+
+Record the choice. Enforce it from the first screen — mixed icon sets require a multi-file migration to fix.
+
+---
+
+**Q4 — Animation system**
+
+> "What animation system will this project use? Pick one before starting — mixing systems causes visual inconsistency and debugging nightmares."
+
+| Option | When to use |
+|---|---|
+| **CSS / Tailwind only** | Simple transitions, hover states, no JS animation needed |
+| **Framer Motion** | React component animations, gestures, layout transitions |
+| **GSAP** | Complex timelines, ScrollTrigger, SVG path animations |
+| **Decide later** | Only if it's genuinely unknown — update CONTEXT.md when chosen |
+
+Record the choice in the output block and in `CONTEXT.md` before writing the first animation.
+
+---
+
+**Expected output — confirm before moving to Phase 1:**
+```
+Phase 0 — Configuration
+────────────────────────
+Component system:  [shadcn/Base UI | shadcn/Radix | shadcn/React Aria | Astryx]
+Storybook:         [Yes — Vite + MCP | Yes — Webpack, no MCP | No]
+Icon set:          [Lucide React | Phosphor Icons | Heroicons | Other: ___]
+Animation system:  [CSS/Tailwind | Framer Motion | GSAP | Undecided]
+Notion updated:    [Yes — recorded under Constraints]
+```
+
+Do not proceed to Phase 1 until this block is output and George has confirmed.
+
+---
+
 ## Phase 1 — MCP connectivity check
 
 Before anything else, verify that the required MCPs are reachable. A missing MCP is not a warning — it is a **hard stop**.
@@ -78,6 +182,23 @@ After MCPs are confirmed, verify the codebase is correctly configured before any
 - Run `npm run typecheck` — it should pass with zero errors
 - Fix any type errors before proceeding. A codebase that starts with type errors compounds them quickly.
 
+**Storybook setup (only if opted in during Phase 0):**
+
+WebSearch for current install steps before running anything — do not rely on training knowledge for CLI flags.
+
+```bash
+npm create storybook@latest
+```
+
+Follow the interactive prompts. If the Vite builder was confirmed in Phase 0 (required for MCP server support):
+- Select **Vite** when prompted for the builder — do not accept the Webpack default
+- After setup, add the MCP addon and connect it per `storybook.js.org/docs/ai/setup`
+- Add the Storybook MCP to the MCP status table in Phase 1 for this project
+
+Write a basic story for the first component added to the project. Do not let stories drift — a story should be written in the same issue as the component it documents.
+
+---
+
 **Testing setup — Playwright (do this in Phase 1b, before any features are built):**
 
 Install Playwright:
@@ -145,7 +266,7 @@ Search available skills and confirm which apply to this project's stack:
 
 | Condition | Skill | When to invoke |
 |---|---|---|
-| Any project | `shadcn` | Before any component work |
+| Any project | `shadcn` | Before any component work — covers both Base UI and Radix backends |
 | Any project | `next-best-practices` | Before Phase 1b stack verification |
 | Supabase included | `supabase-postgres-best-practices` | Before first table or query |
 | Marketing site / landing page | `copywriting` | Before writing any conversion copy |

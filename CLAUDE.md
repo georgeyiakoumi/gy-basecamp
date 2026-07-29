@@ -74,7 +74,7 @@ This project uses the following by default. Do not introduce alternatives unless
 |---|---|
 | Framework | Next.js (App Router) |
 | Styling | Tailwind CSS v4 |
-| Components | shadcn/ui (new-york style) |
+| Components | shadcn/ui (new-york style) — Base UI backend by default as of July 2026. Radix and React Aria also supported via `--base` flag at init. Confirm which backend was selected at project creation by checking `components.json`. **Alternative:** Astryx (Meta) — StyleX-based, not Tailwind-compatible, public beta. See Phase 0 in `project-setup.md`. |
 | Icons | Lucide React |
 | Deployment | Netlify |
 
@@ -99,6 +99,7 @@ Add-ons configured at project creation (check `components.json` and `package.jso
 | **Netlify** | Checking deployment status, environment config |
 | **GitHub** | Repo access, branch/PR status |
 | **Supabase** | Database inspection, schema, RLS (if project uses Supabase) |
+| **Storybook** | Component docs, story generation, a11y tests via AI agents (opt-in; requires Vite builder; React only) |
 
 **Standing rules:**
 - A missing required MCP is a hard stop — see `.claude/rules/process.md` → MCP gates
@@ -147,3 +148,5 @@ Add-ons configured at project creation (check `components.json` and `package.jso
 | `.claude/ui-standards.md` | shadcn · Tailwind · Lucide — layout, colour tokens, typography, spacing, iconography |
 | `.claude/ux-process.md` | Research, strategy, personas, user stories, IA, user flows, user testing |
 | `.claude/memory/lessons.md` | Local backup of Notion Lessons & Insights — read before every session and every action |
+| `.claude/release.md` | gy-basecamp template versioning — semver, CHANGELOG format, GitHub Release steps |
+| `CHANGELOG.md` | Version history for the gy-basecamp template — updated on every release |
