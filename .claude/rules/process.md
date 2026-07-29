@@ -93,6 +93,41 @@ Any time a new package is installed (`npm install [something]`) or a new third-p
 
 ---
 
+## Pre-install version check — mandatory before any scaffold or install
+
+Before running any scaffold command (e.g. `npx create-next-app`, `npx shadcn init`) or installing any package (`npm install [something]`), run this check first — every time, without exception.
+
+Training knowledge has a cutoff date. Package versions, CLI flags, and scaffold output change between major releases. Installing from memory produces outdated dependencies and broken commands that are hard to diagnose.
+
+**Step 1 — Look up the latest stable version:**
+- WebSearch for: `[package name] latest stable version` or `[framework] latest release changelog`
+- Check the official docs or GitHub releases if the search result is ambiguous
+- Do not rely on training knowledge for version numbers
+
+**Step 2 — Verify the scaffold CLI flags are current:**
+- Scaffold CLIs change between major versions (flags are added, removed, renamed)
+- WebSearch for the current scaffold command syntax — e.g. `create-next-app CLI flags [year]`
+- Do not run a scaffold command from memory
+- **shadcn specifically:** as of July 2026, `npx shadcn init` defaults to Base UI. To use Radix or React Aria instead, pass `--base radix` or `--base aria`. Confirm the intended backend with George before running init — changing it after components are added is a migration, not a flag swap.
+
+**Step 3 — State versions before installing:**
+Before running any command, output the following to George:
+```
+About to install:
+- [package]: [version] (source: [where you checked])
+- [package]: [version] (source: [where you checked])
+
+Command: [exact command to run]
+```
+Wait for George to confirm before running.
+
+**Step 4 — Pin major versions where it matters:**
+For scaffold-generated `package.json` files, confirm that core dependencies (Next.js, React, Tailwind, TypeScript) are pinned to the versions actually installed — not floating ranges that will silently upgrade on the next `npm install`.
+
+**The rule:** Never run `npx`, `npm install`, or any package manager command without completing Steps 1–3 first. "I think this is version X" is not a version check.
+
+---
+
 ## Lessons & Insights — read before acting
 
 **This is not a post-session ritual. It is a pre-action requirement.**
@@ -169,10 +204,11 @@ Do not batch these up. Comment at commit time, not at PR time.
 ### PR discipline
 
 Before raising a PR:
-1. Run `npm run typecheck` — must pass with zero errors
-2. Run `npm run lint` — must pass with zero errors (catches JSX/ESLint issues `build` does not)
-3. Run `npm run build` — must exit 0 with no new warnings
-4. Fix anything that fails before raising the PR. Do not raise a PR against a broken build.
+1. Run `/improve quick` — review the output and fix any HIGH confidence findings before continuing. Cross-reference anything flagged against the Notion decisions log and `CONTEXT.md` before acting — intentional trade-offs should not be treated as bugs. Update `CONTEXT.md` with any new trade-offs surfaced.
+2. Run `npm run typecheck` — must pass with zero errors
+3. Run `npm run lint` — must pass with zero errors (catches JSX/ESLint issues `build` does not)
+4. Run `npm run build` — must exit 0 with no new warnings
+5. Fix anything that fails before raising the PR. Do not raise a PR against a broken build.
 
 **Create the PR yourself using `gh pr create`.** Never output the description and ask George to paste it. Never push without also creating the PR. The PR description is your responsibility — draft it, then run `gh pr create` with it in the same step. Do not raise a PR without a description.
 
@@ -239,12 +275,96 @@ Before creating the next branch, write a 4-field Notion entry for the issue just
 ## Milestone completion — never declare done early
 
 Before marking any milestone complete:
-1. Open the user-facing surface in a fresh browser tab and walk through it manually.
-2. Ask: is there any seam between old and new behaviour?
-3. Ask: does the binary acceptance criterion on every issue in this milestone pass?
-4. Ask: does the codebase still contain two vocabularies, two data models, or two UI surfaces where the milestone promised one?
+1. Run `/improve` (full audit) — review all HIGH confidence findings. Fix genuine issues. Log intentional trade-offs in `CONTEXT.md` and the Notion decisions log so they don't surface again next run.
+2. Open the user-facing surface in a fresh browser tab and walk through it manually.
+3. Ask: is there any seam between old and new behaviour?
+4. Ask: does the binary acceptance criterion on every issue in this milestone pass?
+5. Ask: does the codebase still contain two vocabularies, two data models, or two UI surfaces where the milestone promised one?
 
 If any answer is yes — the milestone is not done. "The engine works" is not "every consumer uses the engine."
+
+---
+
+## Production release — shipping to users
+
+A production release happens when the MVP or a significant version is ready for real users. It is distinct from a PR merge or a milestone sign-off — it is a public commitment, with a version number and release notes.
+
+### When to cut a release
+
+- The agreed MVP scope is complete and the milestone completion gate has passed
+- All critical bugs from QA are resolved
+- The Netlify deployment is stable and verified in a fresh browser session
+- George has explicitly confirmed "ready to ship"
+
+Never cut a release speculatively. Wait for explicit confirmation.
+
+### Versioning scheme (semver)
+
+`MAJOR.MINOR.PATCH`
+
+| Increment | When |
+|---|---|
+| **PATCH** (e.g. `1.0.1`) | Bug fixes that don't change the user-facing feature set |
+| **MINOR** (e.g. `1.1.0`) | New features added in a backwards-compatible way |
+| **MAJOR** (e.g. `2.0.0`) | Breaking changes, major redesigns, removed features |
+
+First public release is always `1.0.0`. Pre-release work stays on `0.x.x` if public access is gated.
+
+### Release checklist
+
+Before tagging:
+
+- [ ] Milestone completion gate passed (see above)
+- [ ] `npm run typecheck` — zero errors
+- [ ] `npm run lint` — zero errors
+- [ ] `npm run build` — exits 0, no new warnings
+- [ ] Deployed to Netlify production and verified in a fresh browser tab (not just local)
+- [ ] Dark mode verified on the deployed URL
+- [ ] Mobile viewport verified on the deployed URL
+- [ ] All environment variables confirmed in Netlify → Site → Environment variables
+- [ ] Notion master plan updated to reflect what actually shipped
+- [ ] Notion decisions log has an entry for this release milestone
+
+### Step-by-step
+
+**1. Tag the release**
+```bash
+git tag -a v[X.Y.Z] -m "v[X.Y.Z] — [one-line description]"
+git push origin v[X.Y.Z]
+```
+
+**2. Create the GitHub Release**
+```bash
+gh release create v[X.Y.Z] \
+  --title "v[X.Y.Z] — [short description]" \
+  --notes "[what shipped in plain English — 3–5 bullet points]"
+```
+
+Release notes should be written for a non-technical reader if the project has external stakeholders. Focus on what users can now do — not what code changed.
+
+**3. Update Linear**
+
+Post a comment on the relevant milestone issue:
+- Version: `v[X.Y.Z]`
+- Deployed URL
+- GitHub Release link
+- Mark the milestone issue Done
+
+**4. Write the Notion 4-field entry**
+
+Write a milestone-level entry in the Notion decisions log for the release:
+- What changed: what shipped
+- Why: the problem it solves for users
+- What I almost did instead: scope that was cut, trade-offs made
+- What surprised me: anything that differed from the plan
+
+Tag: `#strategic`
+
+### After the release
+
+- Monitor Netlify deploy logs for the first 24 hours
+- Check for any client/user feedback that reveals issues not caught in QA
+- If a fix is needed, cut a PATCH release — do not push directly to main without a branch and PR
 
 ---
 

@@ -3,6 +3,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ── Tailwind v4 CSS variable syntax ──────────────────────────
+   CORRECT:   w-(--my-var)   → compiles to: width: var(--my-var)
+   WRONG:     w-[--my-var]   → outputs the raw token, not var()
+   Brackets = raw token. Parentheses = var(). Fails silently.
+──────────────────────────────────────────────────────────── */
+
 @theme inline {
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);

@@ -43,23 +43,38 @@ Running `create-project.sh` scaffolds a new project and opens it in VS Code. Fro
 |---|---|
 | Framework | Next.js (App Router) |
 | Styling | Tailwind CSS v4 |
-| Components | shadcn/ui (new-york style) |
-| Icons | Lucide React |
+| Components | shadcn/ui — Base UI backend by default (since July 2026). Radix UI and React Aria also available via `--base` flag at init. |
+| Icons | Lucide React (default) — Phosphor, Heroicons, or Tabler selectable at project creation |
 | Forms | React Hook Form + Zod |
 | Testing | Vitest + Playwright |
 | CI | GitHub Actions |
 | Deployment | Netlify |
 
+**Project types** (chosen at creation):
+
+| Type | Description |
+|---|---|
+| Web app | Product with users, auth, and data — dashboards, SaaS tools |
+| Marketing site | Public-facing, conversion-focused — landing pages, pricing, about |
+| Content site | CMS-driven — Strapi + Supabase + Render + Netlify |
+| Internal tool | Ops dashboards, admin panels — always authenticated, sidebar recommended |
+| UI component library | Reusable components — Storybook recommended |
+| 3D / Interactive experience | WebGL, product visualisers — React Three Fiber + Drei |
+| Email templates | React Email — exits with manual setup instructions |
+| Prototype | Quick explorations and client demos — minimal setup |
+
 **Add-ons** (selected at project creation):
 
 | Add-on | What it adds |
 |---|---|
-| Supabase | Auth + database (client + server clients, RLS-ready) |
+| Supabase | Auth + database (client + server clients, RLS-ready). `.env.example` pre-filled with Session Pooler format. |
 | Dark mode | `next-themes` wired into root layout |
 | Sidebar | shadcn Sidebar component + CSS variables |
-| Charts | Recharts + shadcn chart wrappers + `--chart-*` tokens |
+| Charts — Recharts | Recharts + shadcn chart wrappers + `--chart-*` tokens |
+| Charts — Visx | D3 primitives as React components for complex/custom dataviz |
 | Shiki | Syntax highlighting for code display |
-| Storybook | Component documentation and visual testing |
+| Three.js / WebGL | React Three Fiber + Drei + `@types/three` |
+| Storybook | Component documentation — Vite builder + MCP server opt-in |
 | Cloudinary | `next-cloudinary` + `lib/cloudinary.ts` helper + env vars |
 | Cloudflare + ISR | Webhook revalidation route (`/api/revalidate`) + env vars |
 
@@ -105,15 +120,33 @@ MCP connections (Linear, Notion, Netlify, GitHub, Supabase) are configured at th
 
 ## Creating a new project
 
-Download both scripts and store them somewhere permanent. You only need to do this once.
+Download the scripts and store them somewhere permanent. You only need to do this once.
+
+`create-project.sh` relies on three sub-scripts in `.scripts/` — download the whole set:
 
 ```bash
-# 1. Download the scripts
-curl -o ~/Scripts/create-project.sh https://raw.githubusercontent.com/georgeyiakoumi/gy-basecamp/main/create-project.sh
-curl -o ~/Scripts/sync-template.sh https://raw.githubusercontent.com/georgeyiakoumi/gy-basecamp/main/sync-template.sh
+# 1. Create the scripts directory and download everything
+mkdir -p ~/Scripts/.scripts
+
+curl -o ~/Scripts/create-project.sh \
+  https://raw.githubusercontent.com/georgeyiakoumi/gy-basecamp/main/create-project.sh
+
+curl -o ~/Scripts/.scripts/scaffold.sh \
+  https://raw.githubusercontent.com/georgeyiakoumi/gy-basecamp/main/.scripts/scaffold.sh
+
+curl -o ~/Scripts/.scripts/install.sh \
+  https://raw.githubusercontent.com/georgeyiakoumi/gy-basecamp/main/.scripts/install.sh
+
+curl -o ~/Scripts/.scripts/output.sh \
+  https://raw.githubusercontent.com/georgeyiakoumi/gy-basecamp/main/.scripts/output.sh
+
+curl -o ~/Scripts/sync-template.sh \
+  https://raw.githubusercontent.com/georgeyiakoumi/gy-basecamp/main/sync-template.sh
 
 # 2. Make them executable
-chmod +x ~/Scripts/create-project.sh ~/Scripts/sync-template.sh
+chmod +x ~/Scripts/create-project.sh ~/Scripts/sync-template.sh \
+         ~/Scripts/.scripts/scaffold.sh ~/Scripts/.scripts/install.sh \
+         ~/Scripts/.scripts/output.sh
 
 # 3. Add aliases to your shell profile (~/.zshrc or ~/.bashrc)
 echo 'alias new-project="~/Scripts/create-project.sh"' >> ~/.zshrc
@@ -128,10 +161,13 @@ new-project
 ```
 
 The script will ask for:
-- Project name and type (web app / marketing site / content site / UI component / prototype)
-- Add-ons: Supabase, dark mode, sidebar, charts, Shiki
+- Project name
+- Project type (8 options — web app, marketing site, content site, internal tool, UI component library, 3D / interactive, email templates, prototype)
+- Component system (shadcn/Base UI, Radix, React Aria, or Astryx)
+- Add-ons: Supabase, dark mode, sidebar, data viz, Shiki, Three.js, Cloudinary, Cloudflare ISR, Storybook
+- Animation system (CSS, Framer Motion, GSAP, or decide later)
 
-Then it creates the GitHub repo, clones it, configures the scaffold, runs `npm install`, and opens VS Code. From there, Claude Code handles everything else.
+Then it creates the GitHub repo, clones it, configures the scaffold, installs `shadcn/improve`, and opens VS Code. From there, Claude Code handles everything else.
 
 ## Syncing an existing project
 
@@ -199,20 +235,30 @@ Do this once, at the end of the Brand Identity phase, before any components are 
 
 ```
 ├── CLAUDE.md                    ← Read on every session open — routing + stack + rules
+├── CHANGELOG.md                 ← Version history for the template
+├── create-project.sh            ← Entry point — questions, confirm, clone
+├── sync-template.sh             ← Pull latest template files into any existing project
+├── .scripts/
+│   ├── scaffold.sh              ← File operations inside cloned repo
+│   ├── install.sh               ← npm/npx installs + CONTEXT.md + PR template
+│   └── output.sh                ← Final output, branch protection, MCP checklist
+├── scripts/
+│   └── swap-icons.sh            ← Swap Lucide imports → Phosphor / Heroicons / Tabler
 ├── .claude/
 │   ├── rules/
 │   │   ├── code.md              ← Non-negotiable code rules (re-read after /compact)
 │   │   ├── design.md            ← Non-negotiable design rules (re-read after /compact)
-│   │   └── process.md           ← Non-negotiable process rules + MCP/skill/git tables
+│   │   └── process.md           ← Non-negotiable process rules + MCP/skill/git/release tables
 │   ├── memory/
 │   │   └── lessons.md           ← Local backup of Notion Lessons & Insights
 │   ├── project-setup.md         ← Startup routine: MCP checks → context intake → Notion → Linear
+│   ├── release.md               ← Template versioning — semver, CHANGELOG format, GitHub Release steps
 │   ├── discovery.md             ← Pre-build discovery: problem framing, assumptions, research
 │   ├── design-psychology.md     ← Hick's Law, Gestalt, Fitts's, Jakob's, Cognitive Load
 │   ├── ui-standards.md          ← shadcn · Tailwind · Lucide standards
 │   └── ux-process.md            ← Research, personas, brand identity, flows, testing
 ├── app/
-│   ├── globals.css              ← shadcn CSS variables (edit here to apply brand)
+│   ├── globals.css              ← shadcn CSS variables + Tailwind v4 syntax note
 │   ├── layout.tsx
 │   └── page.tsx
 ├── components/
@@ -223,6 +269,8 @@ Do this once, at the end of the Brand Identity phase, before any components are 
 │   └── smoke.spec.ts
 ├── public/
 ├── .env.example
+├── .github/
+│   └── pull_request_template.md ← PR template for this repo
 ├── components.json              ← shadcn CLI config
 ├── netlify.toml                 ← Build + headers config
 ├── playwright.config.ts         ← E2E test config
@@ -235,3 +283,7 @@ Do this once, at the end of the Brand Identity phase, before any components are 
 ## Updating the template
 
 Improve `.claude/` docs or the scaffold directly in this repo. Existing projects won't be affected — they took a snapshot at clone time. That's intentional.
+
+When a batch of changes is ready: update `CHANGELOG.md`, tag a release, and publish it via `gh release create`. See `.claude/release.md` for the full versioning process.
+
+Existing projects can pull in updated rules and docs via `sync-template --dry-run` to preview, then `sync-template` to apply.

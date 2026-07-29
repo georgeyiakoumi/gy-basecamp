@@ -41,7 +41,7 @@ PROJECT_NAME=$(basename "$(pwd)")
 
 echo ""
 echo -e "${BOLD}╔══════════════════════════════════╗${RESET}"
-echo -e "${BOLD}║     Sync from gy-basecamp   ║${RESET}"
+echo -e "${BOLD}║    Sync from gy-basecamp         ║${RESET}"
 echo -e "${BOLD}╚══════════════════════════════════╝${RESET}"
 echo ""
 echo -e "Project:  ${CYAN}$PROJECT_NAME${RESET}"
@@ -65,10 +65,13 @@ SYNC_FILES=(
   ".claude/rules/design.md:.claude/rules/design.md"
   ".claude/rules/process.md:.claude/rules/process.md"
   ".claude/project-setup.md:.claude/project-setup.md"
+  ".claude/release.md:.claude/release.md"
   ".claude/ui-standards.md:.claude/ui-standards.md"
   ".claude/ux-process.md:.claude/ux-process.md"
   ".claude/design-psychology.md:.claude/design-psychology.md"
   ".claude/setup-acceptance-checklist.md:.claude/setup-acceptance-checklist.md"
+  ".github/pull_request_template.md:.github/pull_request_template.md"
+  "CHANGELOG.md:CHANGELOG.md"
   "e2e/smoke.spec.ts:e2e/smoke.spec.ts"
   "playwright.config.ts:playwright.config.ts"
 )

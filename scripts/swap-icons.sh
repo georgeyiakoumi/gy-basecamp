@@ -3,7 +3,7 @@
 # ─────────────────────────────────────────────────────────────
 # swap-icons.sh
 # Replaces Lucide icon imports in shadcn components with the
-# project's chosen icon library (Phosphor or Tabler).
+# project's chosen icon library (Phosphor, Heroicons, or Tabler).
 #
 # Run this after: npx shadcn add <component>
 # Usage: bash scripts/swap-icons.sh
@@ -24,6 +24,10 @@ if grep -q '"@phosphor-icons/react"' package.json; then
   LIBRARY="phosphor"
   LIBRARY_LABEL="Phosphor Icons"
   IMPORT_FROM="@phosphor-icons/react"
+elif grep -q '"@heroicons/react"' package.json; then
+  LIBRARY="heroicons"
+  LIBRARY_LABEL="Heroicons"
+  IMPORT_FROM="@heroicons/react/24/outline"
 elif grep -q '"@tabler/icons-react"' package.json; then
   LIBRARY="tabler"
   LIBRARY_LABEL="Tabler Icons"
@@ -33,6 +37,7 @@ elif grep -q '"lucide-react"' package.json; then
   exit 0
 else
   echo -e "${RED}✗ No recognised icon library found in package.json.${RESET}"
+  echo -e "  Supported: @phosphor-icons/react, @heroicons/react, @tabler/icons-react"
   exit 1
 fi
 
@@ -48,53 +53,60 @@ if [ -z "$LUCIDE_FILES" ]; then
 fi
 
 # ── Icon name mappings ────────────────────────────────────────
-# Each mapping: "LucideName:PhosphorName:TablerName"
+# Each mapping: "LucideName:PhosphorName:HeroiconsName:TablerName"
 #
 # Covers all 19 unique Lucide icons used across shadcn/ui components.
 # Lucide exports both "Check" and "CheckIcon" — we handle both forms.
+#
+# Heroicons: imported from @heroicons/react/24/outline as named exports
+# with an "Icon" suffix (e.g. ArrowLeftIcon). The swap replaces the bare
+# Lucide name with the Heroicons name; the Icon suffix is handled by the
+# existing "LucideNameIcon → TargetName" replacement pass.
 
 MAPPINGS=(
-  "ArrowLeft:ArrowLeft:IconArrowLeft"
-  "ArrowRight:ArrowRight:IconArrowRight"
-  "Check:Check:IconCheck"
-  "ChevronDown:CaretDown:IconChevronDown"
-  "ChevronLeft:CaretLeft:IconChevronLeft"
-  "ChevronRight:CaretRight:IconChevronRight"
-  "ChevronUp:CaretUp:IconChevronUp"
-  "Circle:Circle:IconCircle"
-  "CircleCheck:CheckCircle:IconCircleCheck"
-  "GripVertical:DotsSixVertical:IconGripVertical"
-  "Info:Info:IconInfoCircle"
-  "Loader2:SpinnerGap:IconLoader2"
-  "Minus:Minus:IconMinus"
-  "MoreHorizontal:DotsThree:IconDots"
-  "OctagonX:XCircle:IconXboxX"
-  "PanelLeft:Sidebar:IconLayoutSidebar"
-  "Search:MagnifyingGlass:IconSearch"
-  "TriangleAlert:Warning:IconAlertTriangle"
-  "X:X:IconX"
+  "ArrowLeft:ArrowLeft:ArrowLeft:IconArrowLeft"
+  "ArrowRight:ArrowRight:ArrowRight:IconArrowRight"
+  "Check:Check:Check:IconCheck"
+  "ChevronDown:CaretDown:ChevronDown:IconChevronDown"
+  "ChevronLeft:CaretLeft:ChevronLeft:IconChevronLeft"
+  "ChevronRight:CaretRight:ChevronRight:IconChevronRight"
+  "ChevronUp:CaretUp:ChevronUp:IconChevronUp"
+  "Circle:Circle:EllipsisHorizontalCircle:IconCircle"
+  "CircleCheck:CheckCircle:CheckCircle:IconCircleCheck"
+  "GripVertical:DotsSixVertical:Bars2:IconGripVertical"
+  "Info:Info:InformationCircle:IconInfoCircle"
+  "Loader2:SpinnerGap:ArrowPath:IconLoader2"
+  "Minus:Minus:Minus:IconMinus"
+  "MoreHorizontal:DotsThree:EllipsisHorizontal:IconDots"
+  "OctagonX:XCircle:XCircle:IconXboxX"
+  "PanelLeft:Sidebar:Bars3BottomLeft:IconLayoutSidebar"
+  "Search:MagnifyingGlass:MagnifyingGlass:IconSearch"
+  "TriangleAlert:Warning:ExclamationTriangle:IconAlertTriangle"
+  "X:X:XMark:IconX"
 )
 
 # ── Build sed commands based on library ───────────────────────
 SED_ARGS=()
 
 for mapping in "${MAPPINGS[@]}"; do
-  IFS=":" read -r LUCIDE PHOSPHOR TABLER <<< "$mapping"
+  IFS=":" read -r LUCIDE PHOSPHOR HEROICONS TABLER <<< "$mapping"
 
   if [ "$LIBRARY" = "phosphor" ]; then
     TARGET="$PHOSPHOR"
+  elif [ "$LIBRARY" = "heroicons" ]; then
+    TARGET="$HEROICONS"
   else
     TARGET="$TABLER"
   fi
 
-  # Skip if source and target are the same (e.g. X:X:IconX for Phosphor)
+  # Skip if source and target are the same
   if [ "$LUCIDE" = "$TARGET" ]; then
     continue
   fi
 
-  # Replace "LucideNameIcon" form (e.g. ChevronDownIcon → CaretDownIcon or IconChevronDown)
-  SED_ARGS+=("-e" "s/${LUCIDE}Icon/${TARGET}/g")
-  # Replace bare "LucideName" form when used as JSX component (e.g. <ChevronDown → <CaretDown)
+  # Replace "LucideNameIcon" form (e.g. ChevronDownIcon → CaretDownIcon)
+  SED_ARGS+=("-e" "s/${LUCIDE}Icon/${TARGET}Icon/g")
+  # Replace bare "LucideName" form when used as JSX component
   # Use word boundary to avoid partial matches
   SED_ARGS+=("-e" "s/\b${LUCIDE}\b/${TARGET}/g")
 done
